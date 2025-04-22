@@ -7,10 +7,6 @@ import cookieParser from "cookie-parser";
 
 import client from "./Database/Index.js";
 
-await client.connect();
-
-const PORT = process.env.SERVER_PORT || 44444;
-
 const app = express();
 
 app.use(cookieParser());
@@ -19,10 +15,14 @@ app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine", "ejs");
 
-app.get("/test", async (req, res) => {
-  res.status(500).json({
-    message: "Hello world",
-  });
+app.get("/test", async (req, res, next) => {
+  try {
+    return res.status(500).json({
+      message: "Hello world",
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Express global error handler
@@ -31,6 +31,17 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal Server Error",
   });
 });
+
+// --- DATABASE CONNECTION AND SERVER INIT --- //
+
+try {
+  await client.connect();
+} catch (err) {
+  console.log(kleur.bgRed("ERROR CONNECTING TO DATABSE"));
+  console.log(err);
+}
+
+const PORT = process.env.SERVER_PORT;
 
 const server = app.listen(PORT, async () => {
   console.log(kleur.bgWhite(`RUNNING ON PORT ${kleur.bgYellow(`${PORT}`)}`));
