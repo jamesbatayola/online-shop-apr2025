@@ -1,0 +1,56 @@
+<%- include('../Shared/Head.ejs') %>
+    <title>Online Shop | Sign In</title>
+</head>
+
+<body>
+    <div class="conatiner">
+        <form action="" class="login-form" >
+            <div>
+                <label for="">Email</label>
+                <input class="email-input" type="text" >
+            </div>
+            <div>
+                <label for="">Password</label>
+                <input class="password-input" type="password" >
+            </div>
+            <a class="reset-password" href="">Forgot password?</a>
+            <button>Sign In</button>
+        </form>
+    </div>
+</body>
+
+
+
+<style>
+  .conatiner {
+    display: grid;
+    place-items: center;
+    height: 100svh;
+    border: 1px solid black;
+  }
+
+  form {
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    letter-spacing: 1px;
+  }
+
+  form input {
+    width: 100%;
+  }
+
+  .reset-password {
+    color: gray;
+    text-decoration: underline;
+    font-size: 0.8rem;
+  }
+
+  button {
+    display: block;
+    padding: 0.5rem;
+  }
+</style>

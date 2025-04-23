@@ -1,3 +1,5 @@
-ALTER TABLE users
-ADD COLUMN password TEXT NOT NULL,
-ADD CONSTRAINT password_length CHECK (char_length(password) >= 4);
+INSERT INTO products (name, price)
+VALUES
+    ('jacket', 10.75),
+    ('earphone', 15.75),
+    ('glass', 50.75)
