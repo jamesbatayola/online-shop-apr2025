@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import express from "express";
+import session from "express-session";
+import passport from "passport";
 
 // __diranem & __filename
 import { fileURLToPath } from "url";
@@ -15,91 +17,37 @@ import cookieParser from "cookie-parser";
 
 import client from "./Database/Index.js";
 
+// SEQUENCE STARTING POINT //
 const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "Views"));
 
-// ----- TESTS ----- //
-
-app.get("/ping", async (req, res, next) => {
-  try {
-    return res.status(500).json({
-      message: "Hello world",
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-import User from "./Models//User.js";
-
-app.get("/users", async (req, res, next) => {
-  try {
-    const users = await User.findAll();
-
-    res.json({
-      users: users,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.get("/users/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findById(id);
-
-    res.json({
-      user: user,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-import bcrypt from "bcryptjs";
-
-app.post("/login", async (req, res, next) => {
-  try {
-    const user = await User.findById(1);
-
-    console.log(user.password);
-
-    if (await bcrypt.compare("1234", user.password)) {
-      return res.json({
-        message: "login successful",
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        },
-      });
-    }
-
-    res.json({ message: "invalid password" });
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.post("/signup", async (req, res, next) => {
-  try {
-    // asd
-    const user = await User.create();
-  } catch (err) {
-    next(err);
-  }
-});
-
+// ----- ROUTES ----- //
 import AuthRoutes from "./Routes/AuthRoutes.js";
+import ShopRoutes from "./Routes/ShopRoutes.js";
+
+import TestRoutes from "./Routes/TestRoutes.js";
 
 app.use("/", AuthRoutes);
+app.use("/shop", ShopRoutes);
+
+app.use(TestRoutes);
 
 // Express global error handler
 app.use((err, req, res, next) => {
