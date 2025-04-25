@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import express from "express";
-import session from "express-session";
+// import session from "express-session";
 import passport from "passport";
 
 // __diranem & __filename
@@ -20,20 +20,21 @@ import client from "./Database/Index.js";
 // SEQUENCE STARTING POINT //
 const app = express();
 
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
 app.use(passport.initialize());
-app.use(passport.session());
+
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
+
+// app.use(passport.session());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "Views"));
