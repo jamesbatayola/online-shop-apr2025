@@ -7,9 +7,13 @@ import jwt from "jsonwebtoken";
 import "../Authentication/GoogleOAuth.js";
 
 import {
+  Display_Email_Verification_Page,
   Display_Signin_Page,
   Display_Signup_Page,
   Process_Signin,
+  Process_Email_Verification,
+  Display_Reset_Password_Page,
+  Process_Reset_Password,
 } from "../Controllers/AuthController.js";
 
 const router = express.Router();
@@ -20,6 +24,12 @@ router.get("/signin", Display_Signin_Page);
 router.post("/signin", Process_Signin);
 
 router.get("/signup", Display_Signup_Page);
+
+router.get("/email-verification", Display_Email_Verification_Page);
+router.post("/email-verification", Process_Email_Verification);
+
+router.get("/reset-password", Display_Reset_Password_Page);
+router.post("/reset-password", Process_Reset_Password);
 
 // router.get("email-verification");
 

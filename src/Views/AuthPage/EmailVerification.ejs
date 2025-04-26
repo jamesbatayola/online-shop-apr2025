@@ -1,0 +1,79 @@
+<%- include('../Shared/Head.ejs') %>
+    <title>Online Shop | Email Verification</title>
+</head>
+
+<body>
+
+    <div class="conatiner">
+
+        <form>
+
+            <div>
+                <label for="">Email</label>
+                <input class="primary-input email-input" type="text" >
+            </div>
+            
+            <button type="submit" >Submit</button>
+
+        </form>
+
+    </div>
+
+</body>
+
+<script>
+
+    document.querySelector('form').addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+
+        const email_input = document.querySelector('.email-input').value;
+
+        const res = await fetch('http://localhost:11111/email-verification', {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email_input,
+            })
+        })
+
+        const obj = await res.json();
+
+        console.log(obj);
+
+    })
+
+</script>
+
+<style>
+    
+    .conatiner {
+      display: grid;
+      place-items: center;
+      height: 100svh;
+      border: 1px solid black;
+    }
+  
+    form {
+      border: 1px solid black;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  
+    .primary-input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.5rem;
+      width: 90%;
+      margin-inline: auto;
+    }
+  
+  </style>

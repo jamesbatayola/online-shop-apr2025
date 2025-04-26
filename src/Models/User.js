@@ -85,6 +85,20 @@ const User = {
 
     return user;
   },
+
+  async changePassword(id, new_password) {
+    const res = await client.query(
+      `
+        UPDATE users
+        SET password = $1
+        WHERE id = $2
+        RETURNING *;
+      `,
+      [new_password, id]
+    );
+
+    return res.rows[0];
+  },
 };
 
 export default User;

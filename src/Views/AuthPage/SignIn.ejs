@@ -3,9 +3,10 @@
 </head>
 
 <body>
+
     <div class="conatiner">
 
-        <form class="signin-form" >
+        <form>
 
             <div>
                 <label for="">Email</label>
@@ -30,8 +31,8 @@
             <a class="create-account" href="">Create an account</a>
 
         </form>
-
     </div>
+
 </body>
 
 <script>
@@ -54,9 +55,9 @@
 
     const obj = await res.json();
     
-    console.log(obj);
-
-   
+    if(obj.success) {
+      window.location.href = `http://localhost:11111/shop/home`
+    }
 
   })
 
@@ -73,6 +74,7 @@
 </script>
 
 <style>
+
   .conatiner {
     display: grid;
     place-items: center;
