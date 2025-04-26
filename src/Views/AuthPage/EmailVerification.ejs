@@ -4,7 +4,7 @@
 
 <body>
 
-    <div class="conatiner">
+    <div class="container">
 
         <form>
 
@@ -42,13 +42,25 @@
 
         console.log(obj);
 
+        if(obj.success) {
+
+            document.querySelector('.container').innerHTML = `
+                <div class="message">
+                    <h1>Check your email</h1>
+                    <p>Password reset link is sent to your email address</p>
+                    <a href="/signin">Return</a>
+                </div>
+            `;
+            
+        };
+
     })
 
 </script>
 
 <style>
     
-    .conatiner {
+    .container {
       display: grid;
       place-items: center;
       height: 100svh;
@@ -76,4 +88,13 @@
       margin-inline: auto;
     }
   
+    .message {
+      border: 1px solid black;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
   </style>

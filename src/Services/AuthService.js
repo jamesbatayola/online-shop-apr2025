@@ -46,14 +46,29 @@ export const Email_Verification_Service = async (req) => {
     throw err;
   }
 
-  const hash_token = crypto.randomBytes(32).toString("hex");
+  let token;
+  let hash_token;
 
-  // Store token in Database
+  // Check if email already has reset_password_token instance in the database
   try {
-    await PasswordResetToken.create(user.id, hash_token);
+    const token = await PasswordResetToken.findById(user.id);
   } catch (err) {
-    err.message = err.message || "Unkown Error";
+    err.message = err.message || "Error while fetching password_reset_token";
     throw err;
+  }
+
+  if (!token) {
+    hash_token = crypto.randomBytes(32).toString("hex");
+
+    // Store reset_password_token instance in Database
+    try {
+      await PasswordResetToken.create(user.id, hash_token);
+    } catch (err) {
+      err.message = err.message || "Error while creating password_reset_token";
+      throw err;
+    }
+  } else {
+    hash_token = token.hash_token;
   }
 
   // Send email link with token
@@ -68,7 +83,7 @@ export const Email_Verification_Service = async (req) => {
 };
 
 export const Reset_Password_Service = async (req) => {
-  const { _user_id, _token, password, confirm_password } = req.body;
+  const { _user_id, _token, confirm_password } = req.body;
 
   const res = await PasswordResetToken.findById(_user_id);
 
@@ -95,7 +110,11 @@ export const Reset_Password_Service = async (req) => {
     throw err;
   }
 
+  // Change password in the database
   await User.changePassword(_user_id, new_password_hash);
+
+  // Remove instance from database
+  await PasswordResetToken.remove(_user_id);
 
   console.log("SUCCESS!");
 

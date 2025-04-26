@@ -1,0 +1,31 @@
+<%- include('../Shared/Head.ejs') %>
+    <title>Online Shop | Error Page</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>error code</h1>
+            <p>error message</p>
+            <a href="/">redirection link</a>
+        </div>
+    </div>
+</body>
+
+<style>
+    .container {
+        display: grid;
+        place-items: center;
+        height: 100svh;
+        border: 1px solid black;
+    }
+
+    .content {
+        border: 1px solid black;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+</style>

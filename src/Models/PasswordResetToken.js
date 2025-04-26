@@ -24,6 +24,19 @@ const PasswordResetToken = {
 
     return res.rows[0];
   },
+
+  async remove(user_id) {
+    const res = await client.query(
+      `
+        DELETE FROM password_reset_tokens
+        WHERE user_id = $1
+        RETURNING *;
+      `,
+      [user_id]
+    );
+
+    return res.rows[0];
+  },
 };
 
 export default PasswordResetToken;
