@@ -14,11 +14,12 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, cb) => {
       try {
-        // Step 1: Check if user already exists in DB
+        // google give us profile object
+        // we store and fetch the google profile in the db
         let user = await User.findOrCreate(profile);
 
-        // Step 3: Pass user to Passport
-        return cb(null, user); // This becomes `req.user`
+        // user becomes argment on the next middleware
+        return cb(null, user);
       } catch (error) {
         return cb(error, null);
       }

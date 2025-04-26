@@ -5,7 +5,7 @@
 <body>
     <div class="conatiner">
 
-        <form action="" class="signin-form" >
+        <form class="signin-form" >
 
             <div>
                 <label for="">Email</label>
@@ -18,7 +18,7 @@
                 <div class="show-password" >
                   <input name="password-checkbox" type="checkbox">
                   <label for="password-checkbox">show password</label>
-                  <a class="reset-password" href="">Forgot password?</a>
+                  <a class="reset-password" href="/email-verification">Forgot password?</a>
                 </div>
             </div>
             
@@ -35,6 +35,31 @@
 </body>
 
 <script>
+
+  // SIGN IN
+  document.querySelector('form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+
+    const email_input = document.querySelector('.email-input').value;
+    const password_input = document.querySelector('.password-input').value;
+
+    const res = await fetch('http://localhost:11111/signin', {
+      method: "POST",
+      headers: { "content-type": "application/json", }, // 	Tells the server: "Hey, I'm sending JSON"
+      body: JSON.stringify ({
+        email: email_input,
+        password: password_input,
+      })
+    });
+
+    const obj = await res.json();
+    
+    console.log(obj);
+
+   
+
+  })
+
   document.querySelector(".create-account").addEventListener("click", async (ev) => {
     ev.preventDefault();
     window.location.href = `http://localhost:11111/signup`
@@ -44,6 +69,7 @@
     ev.preventDefault();
     window.location.href = `http://localhost:11111/auth/google`
   })
+
 </script>
 
 <style>

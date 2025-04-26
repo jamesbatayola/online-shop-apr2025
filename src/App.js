@@ -52,8 +52,12 @@ app.use(TestRoutes);
 
 // Express global error handler
 app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).json({
-    message: err.message || "Internal Server Error",
+  const status = err.statusCode || 500;
+
+  res.status(status).json({
+    success: false,
+    message: err.message || "Something went wrong",
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }), // only in dev
   });
 });
 

@@ -9,6 +9,7 @@ import "../Authentication/GoogleOAuth.js";
 import {
   Display_Signin_Page,
   Display_Signup_Page,
+  Process_Signin,
 } from "../Controllers/AuthController.js";
 
 const router = express.Router();
@@ -16,7 +17,11 @@ const router = express.Router();
 router.get("/", Display_Signin_Page);
 router.get("/signin", Display_Signin_Page);
 
+router.post("/signin", Process_Signin);
+
 router.get("/signup", Display_Signup_Page);
+
+// router.get("email-verification");
 
 // --- GOOGLE OAUTH --- //
 
@@ -27,22 +32,22 @@ router.get(
 
 // prettier-ignore
 router.get('/auth/google/callback', (req, res, next) => {
+  // custom callback middleware for making stateles authentication
   passport.authenticate('google', { session: false }, async (err, user, info) => {
-
-    console.log("-- FROM GOOGLE --")
-    console.log(user.email)
-
+    
+     // Handle error during authentication
     if (err) {
-      // Handle error during authentication
       return next(err);
     }
+
+     // Authentication failed, redirect to sign-in page
     if (!user) {
-      // Authentication failed, redirect to sign-in page
       return res.redirect('/signin');
     }
 
     // Log in the user
-    req.logIn(user, { session: false }, (err) => {
+    // built it method passed by Passport to req object
+    req.logIn(user, { session: false }, (err) => { 
       if (err) {
         return next(err);
       }
@@ -56,7 +61,7 @@ router.get('/auth/google/callback', (req, res, next) => {
        res.cookie('jwt', token, {
         httpOnly: true,
         secure: true, // Set to true if using HTTPS
-        sameSite: 'Lax',
+        sameSite: 'Lax', // Use lax for cross domain cookie setting
         maxAge: 3600000, // 1 hour
       });
 
@@ -65,7 +70,6 @@ router.get('/auth/google/callback', (req, res, next) => {
     });
 
   })(req, res, next);
-
 
 });
 
