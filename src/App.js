@@ -24,17 +24,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, "Public")));
+
 app.use(passport.initialize());
-
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
-
-// app.use(passport.session());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "Views"));
@@ -42,13 +34,15 @@ app.set("views", path.join(__dirname, "Views"));
 // ----- ROUTES ----- //
 import AuthRoutes from "./Routes/AuthRoutes.js";
 import ShopRoutes from "./Routes/ShopRoutes.js";
+import AdminRoutes from "./Routes/AdminRoutes.js";
 
 import TestRoutes from "./Routes/TestRoutes.js";
 
 app.use("/", AuthRoutes);
 app.use("/shop", ShopRoutes);
+app.use("/admin", AdminRoutes);
 
-app.use(TestRoutes);
+app.use("/test", TestRoutes);
 
 // Express global error handler
 app.use((err, req, res, next) => {

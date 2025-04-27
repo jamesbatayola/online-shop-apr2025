@@ -51,7 +51,7 @@ export const Email_Verification_Service = async (req) => {
 
   // Check if email already has reset_password_token instance in the database
   try {
-    const token = await PasswordResetToken.findById(user.id);
+    token = await PasswordResetToken.findById(user.id);
   } catch (err) {
     err.message = err.message || "Error while fetching password_reset_token";
     throw err;

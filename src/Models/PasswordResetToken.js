@@ -2,13 +2,16 @@ import client from "../Database/Index.js";
 
 const PasswordResetToken = {
   async create(user_id, token_hash) {
-    return await client.query(
+    const res = await client.query(
       `
           INSERT INTO password_reset_tokens (user_id, token_hash)
           VALUES ($1, $2)
+          RETURNING *;
        `,
       [user_id, token_hash]
     );
+
+    return res.rows[0];
   },
 
   async findById(user_id) {

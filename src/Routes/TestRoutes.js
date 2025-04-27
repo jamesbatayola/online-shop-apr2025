@@ -1,6 +1,7 @@
 import express from "express";
 
 import User from "../Models/User.js";
+import Product from "../Models/Product.js";
 import bcrypt from "bcryptjs";
 
 const router = express.Router();
@@ -67,6 +68,24 @@ router.post("/signup", async (req, res, next) => {
   try {
     // asd
     const user = await User.create();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/add-product", async (req, res, next) => {
+  try {
+    const product = await Product.create(
+      "item_1",
+      "10.99",
+      "no image",
+      "dummy description",
+      "27894be8-78fd-4a45-bc73-3ec8e3e17bc6"
+    );
+
+    res.status(200).json({
+      data: product,
+    });
   } catch (err) {
     next(err);
   }

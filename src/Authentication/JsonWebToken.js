@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import User from "../Models/User.js";
-import kleur from "kleur";
 
 export const Jwt_Auth = async (req, res, next) => {
   const jwt_token = req.cookies.jwt;
@@ -19,7 +18,12 @@ export const Jwt_Auth = async (req, res, next) => {
     if (err.statusCode === 401) throw err;
   }
 
-  req.user = await User.findByEmail(decoded_token.email);
+  const user = await User.findByEmail(decoded_token.email);
+
+  req.user = {
+    id: user.id,
+    email: user.email,
+  };
 
   next();
 };
