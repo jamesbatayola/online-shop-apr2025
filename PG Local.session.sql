@@ -1,1 +1,2 @@
-DELETE FROM password_reset_tokens
+ALTER TABLE products
+ADD COLUMN user_id UUID NOT NULL REFERENCES users (id) 
