@@ -75,6 +75,14 @@ router.get('/auth/google/callback', (req, res, next) => {
         maxAge: 3600000, // 1 hour
       });
 
+      // Set user_id cookie
+      res.cookie('user_id', user.id, {
+        httpOnly: true,
+        secure: true, // Set to true if using HTTPS
+        sameSite: 'Lax', // Use lax for cross domain cookie setting
+        maxAge: 3600000, // 1 hour
+      })
+
       // Redirect to the desired page
       return res.redirect('/shop/home');
     });

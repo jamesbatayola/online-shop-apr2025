@@ -30,12 +30,17 @@ export const Process_Signin = async (req, res, next) => {
       maxAge: 3600000, // 1 hour (in milliseconds)
     });
 
+    res.cookie("user_id", payload.user_id, {
+      httpOnly: true,
+      sameSite: "Strict",
+      maxAge: 3600000,
+    });
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
       data: {
-        user_id: payload.user.id,
-        user_email: payload.user.email,
+        user_id: payload.user_id,
       },
     });
   } catch (err) {

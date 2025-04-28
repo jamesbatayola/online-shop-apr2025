@@ -29,3 +29,8 @@ export const Add_Product_Service = async (req) => {
 
   return product;
 };
+
+export const Get_User_Products = async (req) => {
+  const product = await Product.findByUserId(req.user.id);
+  return product;
+};

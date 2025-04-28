@@ -5,19 +5,14 @@ const router = express.Router();
 import { Jwt_Auth } from "../Authentication/JsonWebToken.js";
 
 import {
-  Display_Add_Product_Page,
-  Process_Add_Product,
+  Display_Admin_Page,
+  Process_Admin,
 } from "../Controllers/AdminController.js";
 
 import upload from "../Services/Multer.js";
 
-router.get("/add-product", Jwt_Auth, Display_Add_Product_Page);
+router.get("/", Jwt_Auth, Display_Admin_Page);
 
-router.post(
-  "/add-product",
-  Jwt_Auth,
-  upload.single("image_url"),
-  Process_Add_Product
-);
+router.post("/", Jwt_Auth, upload.single("image_url"), Process_Admin);
 
 export default router;

@@ -7,36 +7,49 @@
 
     <div class="container">
         
+        <div>
+            <form>
+                <input class="search-input" type="text">
+                <button type="submit" >Search</button>
+            </form>
+        </div>
+
         <div class="products-container">
 
-            <div class="product">
-                1
-            </div>
+            <% if(products.length <= 0) { %>
+                <h1>No product</h1>
+                <%  return %>
+            <% }  %>
 
-            <div class="product">
-                2
-            </div>
-
-            <div class="product">
-                3
-            </div>
-
-            <div class="product">
-                4
-            </div>
-
-            <div class="product">
-                5
-            </div>
-
-            <div class="product">
-                6
-            </div>
+            <% for(let product of products) { %>
+                <div class="product">
+                    <img src="/img/<%= product.image_url %>" alt="">
+                    <h3><%= product.name %></h3>
+                    <div>P<%= product.price %></div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint id nostrum optio voluptate atque sit quam, quidem nulla illo possimus amet magni animi nihil ad quae quis, omnis qui doloribus?</p>
+                </div>
+            <% } %>
 
         </div>
     </div>
 
 </body>
+
+<script>
+
+    document.querySelector('form').addEventListener('submit', async(ev) => {
+        ev.preventDefault();
+
+        const search_input = document.querySelector('.search-input').value;
+
+        const res = await fetch(`http://localhost:11111/shop/home/search=${search_input}`);
+
+        const obj = await res.json();
+
+        console.log(obj);
+    })
+
+</script>
 
 <style>
     .container {
@@ -55,11 +68,15 @@
     }
 
     .product {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
         width: 250px;
         height: 300px;
         border: 1px solid black;
         transition: 200ms;
         cursor: pointer;
+        padding: 7px;
     }
 
     .product:hover {
@@ -67,5 +84,23 @@
             background-color: blue;
     }
 
+    img {
+        height: 60%;
+        width: 100%;
+        border-radius: 0.3rem;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
     
+    p {
+        display: -webkit-box;             /* Make the element behave like a flex container with multiple lines */
+        -webkit-box-orient: vertical;     /* Defines the box's orientation (vertical to wrap text) */
+        -webkit-line-clamp: 3;            /* Limit to 3 lines (adjust as needed) */
+        overflow: hidden;                 /* Hide the overflow text */
+        text-overflow: ellipsis;          /* Add the ellipsis when text overflows */
+        line-height: 1.5;     
+        font-size: 0.75rem;
+    }
+
 </style>

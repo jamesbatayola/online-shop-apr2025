@@ -73,6 +73,18 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
+router.get("/products", async (req, res, next) => {
+  try {
+    const products = await Product.findAll();
+
+    res.json({
+      products: products,
+    });
+  } catch (err) {
+    next;
+  }
+});
+
 router.get("/add-product", async (req, res, next) => {
   try {
     const product = await Product.create(

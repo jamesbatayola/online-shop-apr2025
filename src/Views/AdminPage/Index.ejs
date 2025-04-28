@@ -1,0 +1,251 @@
+<%- include('../Shared/Head.ejs') %>
+    <title>Online Shop | Admin</title>
+</head>
+
+<body>
+    <%- include('../Shared/Navbar.ejs') %>
+
+    <div class="container">
+
+        <div class="admin-navbar" >
+            <a class="create-product" href=""> <button>Create Product</button></a>
+           <a class="my-product" href=""><button>My Product</button></a>
+        </div>
+
+        <div class="admin-content">
+
+            <form enctype="multipart/form-data">
+                <div>
+                    <label for="">name</label>
+                    <input class="product-name" type="text" name >
+                </div>
+
+                <div>
+                    <label for="">price</label>
+                    <input class="product-price" type="text">
+                </div>
+
+                <div>
+                    <label for="">description</label>
+                    <input class="product-description" type="text">
+                </div>
+
+                <div>
+                    <label for="">image</label>
+                    <input class="product-image" type="file">
+                </div>
+
+                <button type="submit" >Add</button>
+            </form>
+
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+    const admin_content = document.querySelector('.admin-content')
+
+    // ------- INITIAL LOAD ------- //
+    // - form liseter is set to inital page load
+
+    document.querySelector('form').addEventListener('submit', async (ev) => {
+        add_product(ev);
+    })
+
+    async function add_product(ev) {
+        ev.preventDefault();
+
+        const name_input = document.querySelector('.product-name').value;
+        const price_input = document.querySelector('.product-price').value;
+        const description_input = document.querySelector('.product-description').value;
+        const image_input = document.querySelector('.product-image').files[0];
+        
+        const form_data = new FormData();
+
+        form_data.append('name', name_input);
+        form_data.append('price', price_input);
+        form_data.append('description', description_input);
+        form_data.append('image_url', image_input);
+
+        const res = await fetch(`http://localhost:11111/admin?mode=add-product`, {
+            method: "POST",
+            body: form_data,
+        })
+
+        const obj = await res.json();
+        console.log(obj);
+    }
+
+
+    // ------- DYNAMIC LOAD ------- //
+
+    // 'CREATE PRODUCT' BUTTON LISTENER //
+    document.querySelector('.create-product').addEventListener('click', async (ev) => {
+        ev.preventDefault();
+
+        window.history.pushState({ mode: "add" }, "", "/admin?mode=add-product");
+
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode');
+
+        admin_content.innerHTML = 
+        `
+             <form enctype="multipart/form-data" >
+                <div>
+                    <label for="">name</label>
+                    <input class="product-name" type="text" name >
+                </div>
+
+                <div>
+                    <label for="">price</label>
+                    <input class="product-price" type="text">
+                </div>
+
+                <div>
+                    <label for="">description</label>
+                    <input class="product-description" type="text">
+                </div>
+
+                <div>
+                    <label for="">image</label>
+                    <input class="product-image" type="file">
+                </div>
+
+                <button type="submit" >Add</button>
+            </form>
+
+        `
+
+        // form listener is set upon dynamic partial component load
+        document.querySelector('form').addEventListener('submit', async (ev) => add_product(ev));
+    })
+
+    // 'MY PRODUCT' BUTTON LISTENER //
+    document.querySelector('.my-product').addEventListener("click", async (ev) => {
+        ev.preventDefault();
+
+        window.history.pushState({ mode: "view" }, "", "/admin?mode=view-product");  
+
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode');
+
+        const res = await fetch(`http://localhost:11111/admin?mode=view-product`, {
+            method: "POST",
+        });
+
+        const obj = await res.json();
+
+        if(obj.success) {
+
+            admin_content.innerHTML = '';
+
+            for(let product of obj.data.products) {
+                const div = document.createElement('div');
+                div.classList.add('product')
+
+                div.innerHTML = `
+                    <img src="/img/${product.image_url}" alt="">
+                    <h3>${product.name}</h3>
+                    <div>P${product.price}</div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint id nostrum optio voluptate atque sit quam, quidem nulla illo possimus amet magni animi nihil ad quae quis, omnis qui doloribus?</p>
+                `
+
+                admin_content.append(div);
+
+                div.addEventListener('click', ev => display_edit_product(ev))
+            }
+        }
+
+
+        async function display_edit_product (ev) {
+            ev.preventDefault();
+
+            const res = await fetch(`http://localhost:11111/admin?mode=edit-product`);
+        }
+
+    })
+
+
+  
+</script>
+
+<style>
+     .container {
+        width: 90%;
+        margin: 1rem auto;
+        border: 1px solid black;
+        padding: 1rem;
+    }
+
+    .admin-navbar {
+        display: flex;
+        justify-self: center;
+        gap: 1rem;
+    }
+
+    .admin-content {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    /* CREATE PRODUCT COMPONENT  */
+
+    form {
+        border: 1px solid black;
+        width: 70%;
+        padding: 1rem;
+        margin-inline: auto;
+    }
+
+    button {
+        padding: 0.5rem;
+    }
+
+    input {
+        width: 100%;
+    }
+
+    /* USER PRODUCTS COMPONENT */
+
+    .product {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 250px;
+        height: 300px;
+        border: 1px solid black;
+        transition: 200ms;
+        cursor: pointer;
+        padding: 7px;
+    }
+
+    .product:hover {
+            transform: scale(1.1);
+            background-color: blue;
+    }
+
+    img {
+        height: 60%;
+        width: 100%;
+        border-radius: 0.3rem;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
+    
+    p {
+        display: -webkit-box;             /* Make the element behave like a flex container with multiple lines */
+        -webkit-box-orient: vertical;     /* Defines the box's orientation (vertical to wrap text) */
+        -webkit-line-clamp: 3;            /* Limit to 3 lines (adjust as needed) */
+        overflow: hidden;                 /* Hide the overflow text */
+        text-overflow: ellipsis;          /* Add the ellipsis when text overflows */
+        line-height: 1.5;     
+        font-size: 0.75rem;
+    }
+
+
+</style>

@@ -14,6 +14,11 @@ const Product = {
     return res.rows[0];
   },
 
+  async findAll() {
+    const res = await client.query(`SELECT * FROM products;`);
+    return res.rows;
+  },
+
   async findByUserId(user_id) {
     const res = await client.query(
       `
