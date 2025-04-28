@@ -19,11 +19,23 @@ const Product = {
     return res.rows;
   },
 
+  async findById(product_id) {
+    const res = await client.query(
+      `
+        SELECT * FROM products
+        WHERE id = $1;
+      `,
+      [product_id]
+    );
+
+    return res.rows[0];
+  },
+
   async findByUserId(user_id) {
     const res = await client.query(
       `
         SELECT * FROM products
-        WHERE user_id = $1
+        WHERE user_id = $1;
       `,
       [user_id]
     );

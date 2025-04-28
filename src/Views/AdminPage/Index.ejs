@@ -8,8 +8,8 @@
     <div class="container">
 
         <div class="admin-navbar" >
-            <a class="create-product" href=""> <button>Create Product</button></a>
-           <a class="my-product" href=""><button>My Product</button></a>
+            <a class="create-product" > <button>Create Product</button></a>
+           <a class="my-product" ><button>My Product</button></a>
         </div>
 
         <div class="admin-content">
@@ -85,10 +85,8 @@
     document.querySelector('.create-product').addEventListener('click', async (ev) => {
         ev.preventDefault();
 
+        // change current url dynamically
         window.history.pushState({ mode: "add" }, "", "/admin?mode=add-product");
-
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('mode');
 
         admin_content.innerHTML = 
         `
@@ -126,16 +124,15 @@
     document.querySelector('.my-product').addEventListener("click", async (ev) => {
         ev.preventDefault();
 
-        window.history.pushState({ mode: "view" }, "", "/admin?mode=view-product");  
+        // change current url dynamically
+        window.history.pushState({ mode: "view" }, "", "/admin?mode=view_products");  
 
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('mode');
-
-        const res = await fetch(`http://localhost:11111/admin?mode=view-product`, {
+        const res = await fetch(`http://localhost:11111/admin?mode=view_products`, {
             method: "POST",
         });
 
         const obj = await res.json();
+        console.log(obj);
 
         if(obj.success) {
 
@@ -146,6 +143,7 @@
                 div.classList.add('product')
 
                 div.innerHTML = `
+                    <input class="product_id" value="${product.id}" hidden />
                     <img src="/img/${product.image_url}" alt="">
                     <h3>${product.name}</h3>
                     <div>P${product.price}</div>
@@ -162,7 +160,69 @@
         async function display_edit_product (ev) {
             ev.preventDefault();
 
-            const res = await fetch(`http://localhost:11111/admin?mode=edit-product`);
+            // change current url dynamically
+            const product_id = ev.target.parentElement.children[0].value;
+            
+            window.history.pushState({ mode: "view" }, "", `/admin?mode=view_product&id=${product_id}`)
+
+            const res = await fetch(`http://localhost:11111/admin?mode=view_product&id=${product_id}`, {
+                method: 'POST',
+            });
+
+            const obj = await res.json();
+
+            if(obj.success) {
+
+                const product = obj.data.product;
+
+                admin_content.innerHTML = 
+                `
+                    <form class="edit-form" enctype="multipart/form-data" >
+
+                        <div>
+                            <label for="">id</label>
+                            <input class="product-name" type="text" name="id" value=${product.id} readonly >
+                        </div>
+                        
+                        <div>
+                            <label for="">name</label>
+                            <input class="product-name" type="text" name="name" value=${product.name} >
+                        </div>
+
+                        <div>
+                            <label for="">price</label>
+                            <input class="product-price" type="text" name="price" value=${product.price} >
+                        </div>
+
+                        <div>
+                            <label for="">description</label>
+                            <input class="product-description" type="text" name="description" value=${product.description} >
+                        </div>
+
+                        <div>
+                            <label for="">image</label>
+                            <input class="product-image" type="file" name="image" >
+                        </div>
+
+                        <button type="submit" >Edit</button>
+                    </form>
+                `
+
+                document.querySelector('form').addEventListener('click', async (ev) => {
+                ev.preventDefault();
+
+                const res = await fetch(`http://localhost:11111/admin?mode=edit_product&id=${product.id}`, {
+                    method: "POST",
+                })
+
+                const obj = await res.json();
+
+                console.log("ASD");
+            })
+            }
+
+            
+
         }
 
     })
