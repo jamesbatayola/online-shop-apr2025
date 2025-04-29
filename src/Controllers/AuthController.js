@@ -3,7 +3,7 @@ import AuthService from "../Services/AuthService.js";
 const AuthController = {
 	async GET_SignInPage(req, res, next) {
 		try {
-			res.render("AuthPage/SignIn.ejs");
+			res.render("AuthPage/SignIn");
 		} catch (err) {
 			next(err);
 		}
@@ -12,6 +12,26 @@ const AuthController = {
 	async GET_SignUpPage(req, res, next) {
 		try {
 			res.render("AuthPage/SignUp");
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	async GET_Logout(req, res, next) {
+		try {
+			res.render("AuthPage/SignIn");
+
+			res.clearCookie("jwt", {
+				httpOnly: true,
+				sameSite: "Strict",
+				path: "/",
+			});
+
+			res.clearCookie("user_id", {
+				httpOnly: true,
+				sameSite: "Strict",
+				path: "/",
+			});
 		} catch (err) {
 			next(err);
 		}

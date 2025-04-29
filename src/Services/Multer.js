@@ -10,29 +10,29 @@ const __dirname = dirname(__filename);
 import path from "path";
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "..", "Public", "img"));
-  },
+	destination: (req, file, cb) => {
+		cb(null, path.join(__dirname, "..", "Public", "img"));
+	},
 
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const safe_name = file.originalname.replace(/\s+/g, "-"); // replace spaces
-    cb(null, `${timestamp}-${safe_name}`);
-  },
+	filename: (req, file, cb) => {
+		const timestamp = Date.now();
+		const safe_name = file.originalname.replace(/\s+/g, "-"); // replace spaces
+		cb(null, `${timestamp}-${safe_name}`);
+	},
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowed_types = ["image/jpeg", "image/png"];
-  if (allowed_types.includes(file.mimetype)) {
-    cb(null, true); // accept file
-  } else {
-    cb(new Error("Invalid file type"));
-  }
+	const allowed_types = ["image/jpeg", "image/png"];
+	if (allowed_types.includes(file.mimetype)) {
+		cb(null, true); // accept file
+	} else {
+		cb(new Error("Invalid file type"));
+	}
 };
 
 const upload = multer({
-  storage,
-  fileFilter,
+	storage,
+	fileFilter,
 });
 
 export default upload;

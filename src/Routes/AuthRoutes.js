@@ -7,8 +7,11 @@ import jwt from "jsonwebtoken";
 import "../Authentication/GoogleOAuth.js";
 
 import AuthController from "../Controllers/AuthController.js";
+import { Jwt_Auth } from "../Authentication/JsonWebToken.js";
 
 const router = express.Router();
+
+router.get("/logout", Jwt_Auth, AuthController.GET_Logout);
 
 router.get("/", AuthController.GET_SignInPage);
 router.get("/signin", AuthController.GET_SignInPage);
