@@ -56,18 +56,12 @@
 
     async function add_product(ev) {
         ev.preventDefault();
-
-        const name_input = document.querySelector('.product-name').value;
-        const price_input = document.querySelector('.product-price').value;
-        const description_input = document.querySelector('.product-description').value;
-        const image_input = document.querySelector('.product-image').files[0];
-        
+ 
         const form_data = new FormData();
-
-        form_data.append('name', name_input);
-        form_data.append('price', price_input);
-        form_data.append('description', description_input);
-        form_data.append('image_url', image_input);
+        form_data.append('name', document.querySelector('.product-name').value);
+        form_data.append('price', document.querySelector('.product-price').value);
+        form_data.append('description', document.querySelector('.product-description').value);
+        form_data.append('image_url', document.querySelector('.product-image').files[0]);
 
         const res = await fetch(`http://localhost:11111/admin?mode=add-product`, {
             method: "POST",
@@ -144,7 +138,7 @@
 
                 div.innerHTML = `
                     <input class="product_id" value="${product.id}" hidden />
-                    <img src="/img/${product.image_url}" alt="">
+                    <img src="/img/${product.image_url === 'null' ? 'images_placeholder.png' : product.image_url}" alt="">
                     <h3>${product.name}</h3>
                     <div>P${product.price}</div>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint id nostrum optio voluptate atque sit quam, quidem nulla illo possimus amet magni animi nihil ad quae quis, omnis qui doloribus?</p>
@@ -181,7 +175,7 @@
 
                         <div>
                             <label for="">id</label>
-                            <input class="product-name" type="text" name="id" value=${product.id} readonly >
+                            <input class="product-id" type="text" name="id" value=${product.id} readonly >
                         </div>
                         
                         <div>
@@ -209,17 +203,24 @@
                 `
                 
                 // EDIT BUTTON LISTENER
-                document.querySelector('form').addEventListener('click', async (ev) => {
-                ev.preventDefault();
+                document.querySelector('form').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
 
-                const res = await fetch(`http://localhost:11111/admin/edit/${product.id}`, {
-                    method: "POST",
+                    const form_data = new FormData();
+                    form_data.append("id", document.querySelector(".product-id").value);
+                    form_data.append("name", document.querySelector(".product-name").value);
+                    form_data.append("price", document.querySelector(".product-price").value);
+                    form_data.append("description", document.querySelector(".product-description").value);
+                    form_data.append("image_url", document.querySelector(".product-image").files[0]);
+
+                    const res = await fetch(`http://localhost:11111/admin/edit-product`, {
+                        method: "POST",
+                        body: form_data
+                    })
+
+                    const obj = await res.json();
                 })
 
-                const obj = await res.json();
-
-                console.log("ASD");
-            })
             }
 
             

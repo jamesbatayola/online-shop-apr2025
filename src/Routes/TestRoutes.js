@@ -97,4 +97,20 @@ router.get("/add-product", async (req, res, next) => {
 	}
 });
 
+router.get("/product/img/:id", async (req, res, next) => {
+	try {
+		const { id } = req.params;
+
+		console.log(id);
+
+		const product = await Product.getImageUrl(id);
+
+		res.json({
+			data: product,
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
 export default router;

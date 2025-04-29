@@ -12,6 +12,6 @@ router.get("/", Jwt_Auth, AdminController.GET_AdminPage);
 
 router.post("/", Jwt_Auth, upload.single("image_url"), AdminController.POST_Admin);
 
-router.post("/edit/:product_id", Jwt_Auth, upload.single("image_url"), AdminController.POST_EditProduct);
+router.post("/edit-product", Jwt_Auth, upload.single("image_url"), AdminController.PATCH_EditProduct);
 
 export default router;

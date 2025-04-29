@@ -1,4 +1,16 @@
 import Product from "../Models/Product.js";
+import fs from "fs";
+import path from "path";
+
+// __diranem & __filename
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import kleur from "kleur";
+
+import Utils from "../Utils/Index.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // ------- PRIVATE ------- //
 const _postAddProduct = async (req) => {
@@ -72,6 +84,40 @@ const AdminService = {
 				},
 			};
 		}
+	},
+
+	async update_product(req) {
+		// const file = req.file;
+		const { id, name, price, description } = req.body;
+
+		const file = req.file;
+		let image_url = undefined;
+
+		let message = "No image deleted";
+
+		// Remove old photo from local disk
+		if (file) {
+			image_url = file.filename;
+
+			const payload = await Product.getImageUrl(id);
+			const file_path = path.join(__dirname, "..", "Public", "img", payload.image_url);
+
+			// check if old image path stil exist locally
+			if (await Utils.fileExist(file_path)) {
+				fs.unlinkSync(file_path);
+			}
+
+			message = "Old image deleted";
+		}
+
+		const product = await Product.updateProduct(id, name, price, description, image_url);
+
+		console.log(kleur.bgCyan("FINISH!"));
+
+		return {
+			data: product,
+			message: message,
+		};
 	},
 };
 

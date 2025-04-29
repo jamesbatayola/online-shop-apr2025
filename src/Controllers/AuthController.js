@@ -3,7 +3,6 @@ import AuthService from "../Services/AuthService.js";
 const AuthController = {
 	async GET_SignInPage(req, res, next) {
 		try {
-			console.log("HELLO WORLD");
 			res.render("AuthPage/SignIn.ejs");
 		} catch (err) {
 			next(err);

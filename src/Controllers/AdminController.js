@@ -21,7 +21,7 @@ const AdminController = {
 		try {
 			const payload = await AdminService.Dynamic_Process(req);
 
-			res.status(200).json({
+			return res.status(200).json({
 				success: payload.success,
 				message: payload.message,
 				data: payload.data,
@@ -31,9 +31,15 @@ const AdminController = {
 		}
 	},
 
-	async POST_EditProduct(req, res, next) {
+	async PATCH_EditProduct(req, res, next) {
 		try {
-			// const payload = await AdminService.
+			const payload = await AdminService.update_product(req);
+
+			return res.status(200).json({
+				success: true,
+				message: payload.message,
+				data: payload.data,
+			});
 		} catch (err) {
 			next(err);
 		}
