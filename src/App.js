@@ -46,28 +46,28 @@ app.use("/test", TestRoutes);
 
 // Express global error handler
 app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
+	const status = err.statusCode || 500;
 
-  res.status(status).json({
-    success: false,
-    message: err.message || "Something went wrong",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }), // only in dev
-  });
+	res.status(status).json({
+		success: false,
+		message: err.message || "Something went wrong",
+		...(process.env.NODE_ENV === "development" && { stack: err.stack }), // only in dev
+	});
 });
 
 // --- DATABASE CONNECTION AND SERVER INIT --- //
 
 try {
-  await client.connect();
+	await client.connect();
 } catch (err) {
-  console.log(kleur.bgRed("ERROR CONNECTING TO DATABSE"));
-  console.log(err);
+	console.log(kleur.bgRed("ERROR CONNECTING TO DATABSE"));
+	console.log(err);
 }
 
 const PORT = process.env.SERVER_PORT;
 
 const server = app.listen(PORT, async () => {
-  console.log(kleur.bgWhite(`RUNNING ON PORT ${kleur.bgYellow(`${PORT}`)}`));
+	console.log(kleur.bgWhite(`RUNNING ON PORT ${kleur.bgYellow(`${PORT}`)}`));
 });
 
 // TERMINATE TERMINAL UPON EXIT
@@ -75,9 +75,9 @@ process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
 function shutdown() {
-  server.close(() => {
-    console.log(kleur.bgRed(" -SERVER CLOSED. EXITING NOW- "));
-    client.end();
-    process.exit(0);
-  });
+	server.close(() => {
+		console.log(kleur.bgRed(" -SERVER CLOSED. EXITING NOW- "));
+		client.end();
+		process.exit(0);
+	});
 }

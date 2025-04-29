@@ -6,39 +6,28 @@ import jwt from "jsonwebtoken";
 // Google Strategy
 import "../Authentication/GoogleOAuth.js";
 
-import {
-  Display_Email_Verification_Page,
-  Display_Signin_Page,
-  Display_Signup_Page,
-  Process_Signin,
-  Process_Email_Verification,
-  Display_Reset_Password_Page,
-  Process_Reset_Password,
-} from "../Controllers/AuthController.js";
+import AuthController from "../Controllers/AuthController.js";
 
 const router = express.Router();
 
-router.get("/", Display_Signin_Page);
-router.get("/signin", Display_Signin_Page);
+router.get("/", AuthController.GET_SignInPage);
+router.get("/signin", AuthController.GET_SignInPage);
 
-router.post("/signin", Process_Signin);
+router.post("/signin", AuthController.POST_SignIn);
 
-router.get("/signup", Display_Signup_Page);
+router.get("/signup", AuthController.GET_SignUpPage);
 
-router.get("/email-verification", Display_Email_Verification_Page);
-router.post("/email-verification", Process_Email_Verification);
+router.get("/email-verification", AuthController.GET_EmailVerificationPage);
+router.post("/email-verification", AuthController.POST_EmailVerification);
 
-router.get("/reset-password", Display_Reset_Password_Page);
-router.post("/reset-password", Process_Reset_Password);
+router.get("/reset-password", AuthController.GET_DisplayPasswordPage);
+router.patch("/reset-password", AuthController.POST_ResetPassword);
 
 // router.get("email-verification");
 
 // --- GOOGLE OAUTH --- //
 
-router.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // prettier-ignore
 router.get('/auth/google/callback', (req, res, next) => {

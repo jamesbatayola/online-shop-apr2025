@@ -207,11 +207,12 @@
                         <button type="submit" >Edit</button>
                     </form>
                 `
-
+                
+                // EDIT BUTTON LISTENER
                 document.querySelector('form').addEventListener('click', async (ev) => {
                 ev.preventDefault();
 
-                const res = await fetch(`http://localhost:11111/admin?mode=edit_product&id=${product.id}`, {
+                const res = await fetch(`http://localhost:11111/admin/edit/${product.id}`, {
                     method: "POST",
                 })
 
