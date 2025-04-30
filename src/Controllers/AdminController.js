@@ -31,7 +31,7 @@ const AdminController = {
 		}
 	},
 
-	async PATCH_EditProduct(req, res, next) {
+	async PATCH_Product(req, res, next) {
 		try {
 			const payload = await AdminService.update_product(req);
 
@@ -39,6 +39,19 @@ const AdminController = {
 				success: true,
 				message: payload.message,
 				data: payload.data,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	async DELETE_Product(req, res, next) {
+		try {
+			const payload = await AdminService.delete_product(req);
+
+			return res.status(200).json({
+				success: true,
+				message: `product "${payload.product.id} | ${payload.product.name}" is deleted`,
 			});
 		} catch (err) {
 			next(err);

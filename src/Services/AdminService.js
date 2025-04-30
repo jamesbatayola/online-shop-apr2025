@@ -99,8 +99,11 @@ const AdminService = {
 		if (file) {
 			image_url = file.filename;
 
-			const payload = await Product.getImageUrl(id);
-			const file_path = path.join(__dirname, "..", "Public", "img", payload.image_url);
+			const old_image = await Product.getImageUrl(id);
+
+			console.log(old_image);
+
+			const file_path = path.join(__dirname, "..", "Public", "img", old_image);
 
 			// check if old image path stil exist locally
 			if (await Utils.fileExist(file_path)) {
@@ -110,7 +113,7 @@ const AdminService = {
 			message = "Old image deleted";
 		}
 
-		const product = await Product.updateProduct(id, name, price, description, image_url);
+		const product = await Product.update(id, name, price, description, image_url);
 
 		console.log(kleur.bgCyan("FINISH!"));
 
@@ -118,6 +121,21 @@ const AdminService = {
 			data: product,
 			message: message,
 		};
+	},
+
+	async delete_product(req) {
+		const { product_id } = req.params;
+
+		const image_url = await Product.getImageUrl(product_id);
+		const image_url_path = path.join(__dirname, "..", "Public", "img", image_url);
+
+		if (Utils.fileExist(image_url_path)) {
+			fs.unlinkSync(image_url_path);
+		}
+
+		const product = await Product.delete(product_id);
+
+		return { product };
 	},
 };
 

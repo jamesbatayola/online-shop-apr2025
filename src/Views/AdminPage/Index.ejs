@@ -199,6 +199,7 @@
                         </div>
 
                         <button type="submit" >Edit</button>
+                         <button id="delete-button" type="button" >Delete</button>
                     </form>
                 `
                 
@@ -219,6 +220,21 @@
                     })
 
                     const obj = await res.json();
+                })
+
+                // DELETE BUTTON LISTENER
+                document.querySelector('#delete-button').addEventListener('click', async (ev) => {
+                    ev.preventDefault();
+
+                    const product_id = ev.target.parentElement.children[0].children[1].value;
+
+                    const res = await fetch(`http://localhost:11111/admin/delete-product/${product_id}`, {
+                        method: "DELETE",
+                    })
+
+                    const obj = await res.json();
+
+                    console.log(obj);
                 })
 
             }

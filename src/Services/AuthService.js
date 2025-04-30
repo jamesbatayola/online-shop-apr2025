@@ -6,6 +6,14 @@ import crypto from "crypto";
 import PasswordResetToken from "../Models/PasswordResetToken.js";
 
 const AuthService = {
+	async create_account(req) {
+		const { email, name, password } = req.body;
+
+		const user = await User.create(email, name, password);
+
+		return user;
+	},
+
 	async process_login(req) {
 		const { email, password } = req.body;
 

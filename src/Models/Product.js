@@ -43,7 +43,7 @@ const Product = {
 		return res.rows;
 	},
 
-	async updateProduct(id, name, price, description, image_url) {
+	async update(id, name, price, description, image_url) {
 		let res;
 
 		// if no image file attach does not exist
@@ -79,6 +79,19 @@ const Product = {
 		return res.rows[0];
 	},
 
+	async delete(id) {
+		const res = await client.query(
+			`
+				DELETE FROM products
+				WHERE id = $1
+				RETURNING *;
+			`,
+			[id]
+		);
+
+		return res.rows[0];
+	},
+
 	async getImageUrl(id) {
 		const res = await client.query(
 			`
@@ -88,7 +101,7 @@ const Product = {
 			[id]
 		);
 
-		return res.rows[0];
+		return res.rows[0]?.image_url;
 	},
 };
 

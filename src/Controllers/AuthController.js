@@ -21,6 +21,8 @@ const AuthController = {
 		try {
 			res.render("AuthPage/SignIn");
 
+			// REMOVE COOKIES //
+
 			res.clearCookie("jwt", {
 				httpOnly: true,
 				sameSite: "Strict",
@@ -59,6 +61,20 @@ const AuthController = {
 				data: {
 					user_id: payload.user_id,
 				},
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	async PUT_SignUp(req, res, next) {
+		try {
+			const payload = await AuthService.create_account(req);
+
+			res.status(200).json({
+				success: true,
+				message: "Account created successfully",
+				data: payload.user,
 			});
 		} catch (err) {
 			next(err);
