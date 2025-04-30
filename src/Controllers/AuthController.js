@@ -50,7 +50,7 @@ const AuthController = {
 			});
 
 			res.cookie("user_id", payload.user_id, {
-				httpOnly: true,
+				httpOnly: false,
 				sameSite: "Strict",
 				maxAge: 3600000,
 			});

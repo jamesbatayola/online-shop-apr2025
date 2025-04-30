@@ -11,6 +11,17 @@ async function fileExist(path) {
 	}
 }
 
+async function isLoggedIn(req, res, next) {
+	if (req.cookies.jwt || req.cookies.user_id) {
+		req.isLoggedIn = true;
+		return next();
+	}
+
+	req.isLoggedIn = false;
+	next();
+}
+
 export default {
 	fileExist,
+	isLoggedIn,
 };

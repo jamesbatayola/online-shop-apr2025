@@ -1,17 +1,22 @@
 <div class="navbar">
+
     <div class="left">
         <ol>
             <li><a href="/shop/home">Home</a></li>
             <li><a href="">Cart</a></li>
             <li><a href="">Checkout</a></li>
-            <span>|</span>
-            <li><a href="/admin?mode=add-product">Admin</a></li>
+            <% if (isLoggedIn) { %> 
+                <span>|</span>
+                <li><a href="/admin?mode=add-product">Admin</a></li>
+            <% } %>
         </ol>
     </div>
     <div class="right">
         <ol>
             <li><a href="">Profile</a></li>
-            <li><a href="/logout">Logout</a></li>
+            <% if (isLoggedIn) { %>
+                <li><a href="/logout">Logout</a></li>
+            <% } %>
         </ol>
     </div>
 </div>

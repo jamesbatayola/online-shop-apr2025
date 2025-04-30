@@ -101,8 +101,6 @@ const AdminService = {
 
 			const old_image = await Product.getImageUrl(id);
 
-			console.log(old_image);
-
 			const file_path = path.join(__dirname, "..", "Public", "img", old_image);
 
 			// check if old image path stil exist locally

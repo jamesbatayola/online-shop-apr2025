@@ -11,6 +11,7 @@ const AdminController = {
 
 	async GET_AdminPage(req, res, next) {
 		try {
+			console.log(req.user.id);
 			res.render("AdminPage/Index");
 		} catch (err) {
 			next(err);

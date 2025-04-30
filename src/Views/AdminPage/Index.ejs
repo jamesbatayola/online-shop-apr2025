@@ -199,13 +199,15 @@
                         </div>
 
                         <button type="submit" >Edit</button>
-                         <button id="delete-button" type="button" >Delete</button>
+                        <button id="delete-button" type="button" >Delete</button>
                     </form>
                 `
                 
                 // EDIT BUTTON LISTENER
                 document.querySelector('form').addEventListener('submit', async (ev) => {
                     ev.preventDefault();
+
+                    console.log("EDIT!")
 
                     const form_data = new FormData();
                     form_data.append("id", document.querySelector(".product-id").value);
@@ -215,11 +217,13 @@
                     form_data.append("image_url", document.querySelector(".product-image").files[0]);
 
                     const res = await fetch(`http://localhost:11111/admin/edit-product`, {
-                        method: "POST",
+                        method: "PATCH",
                         body: form_data
                     })
 
                     const obj = await res.json();
+
+                    console.log(obj);
                 })
 
                 // DELETE BUTTON LISTENER

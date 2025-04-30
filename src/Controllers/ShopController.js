@@ -5,8 +5,9 @@ const ShopController = {
 		try {
 			const products = await Get_Products();
 
-			res.render("ShopPage/Home.ejs", {
+			res.render("ShopPage/Home", {
 				products: products,
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
 		} catch (err) {
 			next(err);
