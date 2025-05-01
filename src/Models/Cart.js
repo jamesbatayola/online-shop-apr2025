@@ -71,19 +71,20 @@ const Cart = {
 			return await this.addProduct(user_cart.id, product_id);
 		} else {
 			const cart_item = res.rows[0];
-			return await this.addProductQuantity(cart_item.cart_id, cart_item.product_id);
+			return await this.addProductQuantity(cart_item.id);
 		}
 	},
 
-	async addProductQuantity(cart_id, product_id) {
+	// returns cart item
+	async addProductQuantity(cart_item_id) {
 		const res = await client.query(
 			`
                 UPDATE cart_items
                 SET quantity = quantity + 1
-                WHERE id = $1 AND product_id = $2
+                WHERE id = $1
                 RETURNING *;
             `,
-			[cart_id, product_id]
+			[cart_item_id]
 		);
 
 		return res.rows[0];

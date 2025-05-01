@@ -5,7 +5,7 @@ const ShopController = {
 		try {
 			const products = await ShopService.fetch_products();
 
-			res.render("ShopPage/Home", {
+			return res.render("ShopPage/Home", {
 				products: products,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
@@ -49,7 +49,7 @@ const ShopController = {
 		try {
 			await ShopService.add_to_cart(req);
 
-			res.status(200).json({
+			return res.status(200).json({
 				success: true,
 				message: "ADDED TO CART",
 			});
@@ -57,6 +57,53 @@ const ShopController = {
 			next(err);
 		}
 	},
+
+	async PATCH_CartPlusProduct(req, res, next) {
+		try {
+			const product = await ShopService.plus_cart_product(req);
+
+			return res.status(200).json({
+				success: true,
+				message: "Product quantity incremented successfully",
+				data: product,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	// async PATCH_CartMinusProduct(req, res, next) {
+	// 	try {
+	// 		return res.status(200).json({
+	// 			success: true,
+	// 			message: "ASD",
+	// 		});
+	// 	} catch (err) {
+	// 		next(err);
+	// 	}
+	// },
+
+	// async PATCH_CartRemoveProduct(req, res, next) {
+	// 	try {
+	// 		return res.status(200).json({
+	// 			success: true,
+	// 			message: "ASD",
+	// 		});
+	// 	} catch (err) {
+	// 		next(err);
+	// 	}
+	// },
+
+	// async PATCH_CartCheckoutProduct(req, res, next) {
+	// 	try {
+	// 		return res.status(200).json({
+	// 			success: true,
+	// 			message: "ASD",
+	// 		});
+	// 	} catch (err) {
+	// 		next(err);
+	// 	}
+	// },
 };
 
 export default ShopController;

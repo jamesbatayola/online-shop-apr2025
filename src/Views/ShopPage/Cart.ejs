@@ -14,30 +14,31 @@
             <% for(let product of products) { %>
 
                 <div class="cart-item">
-                    
+
+                    <input class="cart_item_id" type="hidden" value="<%= product.cart_item_id %>" readonly hidden >
+
                     <img src="/img/<%= product.image === 'null' ? 'images_placeholder.png' : product.image %>" alt="Product Image">
                    
                     <div class="right-part" >
-
-                        <input type="hidden" value="<%= product.cart_item_id %>" readonly hidden >
                         
                         <div class="">
                             <h2 style="margin-bottom: 10px;"><%= product.name %></h2>
                             <p>Description: <%= product.description %> | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem quibusdam consequuntur magni totam nam nostrum aspernatur distinctio repellat tempore. Earum natus, quos sed in esse dolore perferendis consectetur qui eos? </p>
                         </div>
-                        
 
-                        <div style="display: grid; gap: 1px;">
-                            <p>Price: <%= product.price_each %></p>
+                        <div class="right-part-bottom"  style="display: grid; gap: 1px;">
+
+                            <p class="price_each">Price: <%= product.price_each %></p>
                            
-                            <p>Quantity: <%= product.quantity %></p>
-                            <p>Total Price: <%= product.price_total %></p>
-                            <div style="width: 100;" >
-                                <button>+</button>
-                                <button>-</button>
-                                <button style="margin-left: auto;" >Remove</button>
-                                <button>Checkout</button>
+                            <p class="quantity">Quantity: <%= product.quantity %></p>
+                            <p class="price_total" >Total Price: <%= product.price_total %></p>
+                            <div style="width: 100%;" >
+                                <button class="plus-btn" >+</button>
+                                <button class="minu-btn" style="margin-right: 1rem;"" >-</button>
+                                <button class="remove-btn" >Remove</button>
+                                <button class="checkout-btn" >Checkout</button>
                             </div>
+
                         </div>
 
                     </div>
@@ -51,6 +52,31 @@
     </div>
 
 </body>
+
+<script>
+
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', async(ev) => {
+            const ev_parent = ev.target.parentElement;
+
+            const cart_item_id = ev_parent.closest('.cart-item').querySelector('.cart_item_id').value;
+
+            const res = await fetch(`http://localhost:11111/shop/cart/plus/${cart_item_id}`, {
+                method: "PATCH",
+            })
+
+            const obj = await res.json();
+            
+            if(obj.success) {
+                console.log(obj);
+                const quantity = ev_parent.closest('.right-part-bottom').querySelector('.quantity').textContent = `Quantity: ${obj.data.product.quantity}`;
+                const total_price = ev_parent.closest('.right-part-bottom').querySelector('.price_total').textContent *= 2;
+            }
+
+        })
+    })
+
+</script>
 
 <style>
 
@@ -92,7 +118,5 @@
         flex-grow: 0;
         flex-shrink: 0;
     }
-
-  
 
 </style>

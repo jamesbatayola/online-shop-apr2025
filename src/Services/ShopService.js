@@ -45,6 +45,17 @@ const ShopService = {
 			price_total: product.price * cart_item.quantity,
 		};
 	},
+
+	// must returns new quantity
+	async plus_cart_product(req) {
+		const { cart_item_id } = req.params;
+
+		const product = await Cart.addProductQuantity(cart_item_id);
+
+		return { product: product };
+	},
+
+	// async minus_cart_product(cart_item_id) {},
 };
 
 export default ShopService;
