@@ -90,6 +90,33 @@ const Cart = {
 		return res.rows[0];
 	},
 
+	async minusProductQuantity(cart_item_id) {
+		const res = await client.query(
+			`
+				UPDATE cart_items
+				SET quantity = quantity - 1
+				WHERE id = $1
+				RETURNING *;
+			`,
+			[cart_item_id]
+		);
+
+		return res.rows[0];
+	},
+
+	async removeProduct(cart_item_id) {
+		const res = await client.query(
+			`
+				DELETE FROM cart_items
+				WHERE id = $1
+				RETURNING *;
+			`,
+			[cart_item_id]
+		);
+
+		return res.rows[0];
+	},
+
 	async findProducts(cart_id) {
 		const res = await client.query(
 			`

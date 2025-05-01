@@ -34,7 +34,7 @@
                             <p class="price_total" >Total Price: <%= product.price_total %></p>
                             <div style="width: 100%;" >
                                 <button class="plus-btn" >+</button>
-                                <button class="minu-btn" style="margin-right: 1rem;"" >-</button>
+                                <button class="minus-btn" style="margin-right: 1rem;"" >-</button>
                                 <button class="remove-btn" >Remove</button>
                                 <button class="checkout-btn" >Checkout</button>
                             </div>
@@ -61,18 +61,32 @@
 
             const cart_item_id = ev_parent.closest('.cart-item').querySelector('.cart_item_id').value;
 
-            const res = await fetch(`http://localhost:11111/shop/cart/plus/${cart_item_id}`, {
-                method: "PATCH",
-            })
+            const res = await fetch(`http://localhost:11111/shop/cart/plus/${cart_item_id}`, { method: "PATCH" })
 
             const obj = await res.json();
             
             if(obj.success) {
-                console.log(obj);
-                const quantity = ev_parent.closest('.right-part-bottom').querySelector('.quantity').textContent = `Quantity: ${obj.data.product.quantity}`;
-                const total_price = ev_parent.closest('.right-part-bottom').querySelector('.price_total').textContent *= 2;
+                const quantity = ev_parent.closest('.right-part-bottom').querySelector('.quantity').textContent = `Quantity: ${obj.data.new_quantity}`;
+                const total_price = ev_parent.closest('.right-part-bottom').querySelector('.price_total').textContent = `Total Price: ${obj.data.new_total_price}`;
             }
 
+        })
+    })
+
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', async (ev) => {
+            const ev_parent = ev.target.parentElement;
+
+            const cart_item_id = ev_parent.closest('.cart-item').querySelector('.cart_item_id').value;
+
+            const res = await fetch(`http://localhost:11111/shop/cart/minus/${cart_item_id}`, { method: "PATCH" });
+
+            const obj = await res.json();
+
+            if(obj.success) {
+                const quantity = ev_parent.closest('.right-part-bottom').querySelector('.quantity').textContent = `Quantity: ${obj.data.new_quantity}`;
+                const total_price = ev_parent.closest('.right-part-bottom').querySelector('.price_total').textContent = `Total Price: ${obj.data.new_total_price}`;
+            }
         })
     })
 

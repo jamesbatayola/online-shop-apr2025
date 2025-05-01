@@ -50,12 +50,26 @@ const ShopService = {
 	async plus_cart_product(req) {
 		const { cart_item_id } = req.params;
 
-		const product = await Cart.addProductQuantity(cart_item_id);
+		const cart_item = await Cart.addProductQuantity(cart_item_id);
+		const product = await Product.findById(cart_item.product_id);
 
-		return { product: product };
+		return {
+			new_quantity: cart_item.quantity,
+			new_total_price: product.price * cart_item.quantity,
+		};
 	},
 
-	// async minus_cart_product(cart_item_id) {},
+	async minus_cart_product(req) {
+		const { cart_item_id } = req.params;
+
+		const cart_item = await Cart.minusProductQuantity(cart_item_id);
+		const product = await Product.findById(cart_item.product_id);
+
+		return {
+			new_quantity: cart_item.quantity,
+			new_total_price: product.price * cart_item.quantity,
+		};
+	},
 };
 
 export default ShopService;

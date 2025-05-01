@@ -60,28 +60,31 @@ const ShopController = {
 
 	async PATCH_CartPlusProduct(req, res, next) {
 		try {
-			const product = await ShopService.plus_cart_product(req);
+			const service_payload = await ShopService.plus_cart_product(req);
 
 			return res.status(200).json({
 				success: true,
 				message: "Product quantity incremented successfully",
-				data: product,
+				data: service_payload,
 			});
 		} catch (err) {
 			next(err);
 		}
 	},
 
-	// async PATCH_CartMinusProduct(req, res, next) {
-	// 	try {
-	// 		return res.status(200).json({
-	// 			success: true,
-	// 			message: "ASD",
-	// 		});
-	// 	} catch (err) {
-	// 		next(err);
-	// 	}
-	// },
+	async PATCH_CartMinusProduct(req, res, next) {
+		try {
+			const service_payload = await ShopService.minus_cart_product(req);
+
+			return res.status(200).json({
+				success: true,
+				message: "ASD",
+				data: service_payload,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
 
 	// async PATCH_CartRemoveProduct(req, res, next) {
 	// 	try {
