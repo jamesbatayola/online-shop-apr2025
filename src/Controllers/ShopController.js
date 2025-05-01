@@ -28,20 +28,16 @@ const ShopController = {
 			const cart_products = await ShopService.fetch_cart_products(req);
 
 			// process display
-			// const products_to_display = [];
+			const products_to_display = [];
 
 			for (let cart_product of cart_products) {
-				const asd = await ShopService.display_cart_products(cart_product.cart_id, cart_product.product_id);
+				const product_sanitize = await ShopService.display_cart_products(cart_product.cart_id, cart_product.product_id);
 
-				// products_to_display.push();
-
-				console.log(asd);
+				products_to_display.push(product_sanitize);
 			}
 
-			console.log("FINISHED");
-
 			return res.render("ShopPage/Cart", {
-				products: cart_products,
+				products: products_to_display,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
 		} catch (err) {
