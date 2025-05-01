@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS carts (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
+    status ENUM('active', 'checked_out') DEFAULT 'active'
 
     FOREIGN KEY (user_id) REFERENCES users (id),
 

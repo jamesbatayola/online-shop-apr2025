@@ -9,10 +9,10 @@ const User = {
 		try {
 			const res = await client.query(
 				`
-          INSERT INTO users (email, name, password)
-          VALUES ($1, $2, $3)
-          RETURNING *;
-        `,
+				INSERT INTO users (email, name, password)
+				VALUES ($1, $2, $3)
+				RETURNING *;
+			`,
 				[email, name, password]
 			);
 
@@ -81,11 +81,11 @@ const User = {
 	async changePassword(id, new_password) {
 		const res = await client.query(
 			`
-        UPDATE users
-        SET password = $1
-        WHERE id = $2
-        RETURNING *;
-      `,
+			UPDATE users
+			SET password = $1
+			WHERE id = $2
+			RETURNING *;
+      	`,
 			[new_password, id]
 		);
 

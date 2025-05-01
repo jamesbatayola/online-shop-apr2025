@@ -3,7 +3,9 @@ import AdminService from "../Services/AdminService.js";
 const AdminController = {
 	async GET_MyProductPage(req, res, next) {
 		try {
-			res.render("AdminPage/MyProduct");
+			res.render("AdminPage/MyProduct", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -11,8 +13,9 @@ const AdminController = {
 
 	async GET_AdminPage(req, res, next) {
 		try {
-			console.log(req.user.id);
-			res.render("AdminPage/Index");
+			res.render("AdminPage/Index", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 		} catch (err) {
 			next(err);
 		}

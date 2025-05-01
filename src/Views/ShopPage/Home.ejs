@@ -23,11 +23,12 @@
 
             <% for(let product of products) { %>
                 <div class="product">
+                    <input type="text" value="<%= product.id %>" readonly hidden>
                     <img src="/img/<%= product.image_url === 'null' ? 'images_placeholder.png' : product.image_url %>" alt="Product Image">
                     <h3><%= product.name %></h3>
                     <div>P<%= product.price %></div>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint id nostrum optio voluptate atque sit quam, quidem nulla illo possimus amet magni animi nihil ad quae quis, omnis qui doloribus?</p>
-                    <button>Add to cart</button>
+                    <button class="add_to_cart_button" >Add to cart</button>
                 </div>
             <% } %>
 
@@ -49,6 +50,22 @@
 
         console.log(obj);
     })
+
+    // ADD TO CART BUTTON LISTENER
+    document.querySelectorAll('.add_to_cart_button').forEach(btn => {
+        btn.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+
+            const product_id = ev.target.parentElement.children[0].value.trim();
+
+            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, {
+                method: "POST",
+            });
+
+            // const obj = await res.json();
+            // console.log(obj);
+        })
+    }) 
 
 </script>
 

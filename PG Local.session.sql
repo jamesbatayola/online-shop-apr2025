@@ -1,4 +1,1 @@
-UPDATE products
-SET 
-    name = 'item01'
-WHERE id = 2
+ALTER TABLE cart_item RENAME TO cart_items;

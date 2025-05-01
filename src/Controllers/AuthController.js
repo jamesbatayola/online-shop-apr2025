@@ -3,7 +3,9 @@ import AuthService from "../Services/AuthService.js";
 const AuthController = {
 	async GET_SignInPage(req, res, next) {
 		try {
-			res.render("AuthPage/SignIn");
+			res.render("AuthPage/SignIn", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -11,7 +13,9 @@ const AuthController = {
 
 	async GET_SignUpPage(req, res, next) {
 		try {
-			res.render("AuthPage/SignUp");
+			res.render("AuthPage/SignUp", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -19,7 +23,9 @@ const AuthController = {
 
 	async GET_Logout(req, res, next) {
 		try {
-			res.render("AuthPage/SignIn");
+			res.render("AuthPage/SignIn", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 
 			// REMOVE COOKIES //
 
@@ -83,7 +89,9 @@ const AuthController = {
 
 	async GET_EmailVerificationPage(req, res, next) {
 		try {
-			res.render("AuthPage/EmailVerification");
+			res.render("AuthPage/EmailVerification", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -109,6 +117,7 @@ const AuthController = {
 			res.render("AuthPage/ResetPassword", {
 				token: token,
 				user_id: user_id,
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
 		} catch (err) {
 			next(err);

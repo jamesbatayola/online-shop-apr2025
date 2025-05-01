@@ -1,6 +1,50 @@
 import Product from "../Models/Product.js";
+import Cart from "../Models/Cart.js";
 
-export const Get_Products = () => {
-  const products = Product.findAll();
-  return products;
+const ShopService = {
+	async fetch_products() {
+		const products = Product.findAll();
+		return products;
+	},
+
+	// fetch carts products of user
+	async fetch_cart_products(req) {
+		const user_cart = await Cart.findOrCreate(req.user.id, "active");
+
+		const cart_products = await Cart.findProducts(user_cart.id);
+		return cart_products;
+	},
+
+	async add_to_cart(req) {
+		const { product_id } = req.params;
+
+		const res = await Cart.findOrAddProduct(req.user.id, "active", product_id);
+
+		return res;
+	},
+
+	async display_cart_products(cart_id, product_id) {
+		const cart_item = await Cart.findProduct(cart_id, product_id);
+
+		if (!cart_item) {
+			const err = new Error("Cart item does not exist");
+			err.statusCode = 404;
+			throw err;
+		}
+
+		const product = await Product.findById(product_id);
+
+		return {
+			cart_item_id: cart_item.id,
+
+			image: product.image_url,
+			name: product.name,
+			description: product.description,
+			quantity: cart_item.quantity,
+			price_each: product.price,
+			price_total: product.price * cart_item.quantity,
+		};
+	},
 };
+
+export default ShopService;
