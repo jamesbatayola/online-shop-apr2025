@@ -61,14 +61,37 @@ const ShopService = {
 
 	async minus_cart_product(req) {
 		const { cart_item_id } = req.params;
+		const { current_quantity } = req.body;
 
-		const cart_item = await Cart.minusProductQuantity(cart_item_id);
-		const product = await Product.findById(cart_item.product_id);
+		let new_quantity;
+		let new_total_price;
+
+		if (current_quantity === 1) {
+			await this.remove_cart_product(req);
+			new_quantity = 0;
+			new_total_price = 0;
+		} else {
+			const cart_item = await Cart.minusProductQuantity(cart_item_id);
+			const product = await Product.findById(cart_item.product_id);
+
+			new_quantity = cart_item.quantity;
+			new_total_price = product.price * cart_item.quantity;
+		}
 
 		return {
-			new_quantity: cart_item.quantity,
-			new_total_price: product.price * cart_item.quantity,
+			new_quantity: new_quantity,
+			new_total_price: new_total_price,
 		};
+	},
+
+	async remove_cart_product(req) {
+		const { cart_item_id } = req.params;
+
+		const cart_item = await Cart.removeProduct(cart_item_id);
+
+		console.log("FINISHED");
+
+		return { cart_item };
 	},
 };
 

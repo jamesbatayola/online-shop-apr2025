@@ -58,12 +58,10 @@
 
             const product_id = ev.target.parentElement.children[0].value.trim();
 
-            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, {
-                method: "POST",
-            });
+            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, { method: "POST" });
 
-            // const obj = await res.json();
-            // console.log(obj);
+            const obj = await res.json();
+            console.log(obj);
         })
     }) 
 

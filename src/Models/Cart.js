@@ -68,7 +68,7 @@ const Cart = {
 		);
 
 		if (res.rows.length <= 0) {
-			return await this.addProduct(user_cart.id, product_id);
+			return await this.addProduct(user_cart.user_id, "active", product_id);
 		} else {
 			const cart_item = res.rows[0];
 			return await this.addProductQuantity(cart_item.id);

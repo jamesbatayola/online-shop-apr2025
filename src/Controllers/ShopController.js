@@ -49,6 +49,8 @@ const ShopController = {
 		try {
 			await ShopService.add_to_cart(req);
 
+			console.log("finish");
+
 			return res.status(200).json({
 				success: true,
 				message: "ADDED TO CART",
@@ -86,16 +88,19 @@ const ShopController = {
 		}
 	},
 
-	// async PATCH_CartRemoveProduct(req, res, next) {
-	// 	try {
-	// 		return res.status(200).json({
-	// 			success: true,
-	// 			message: "ASD",
-	// 		});
-	// 	} catch (err) {
-	// 		next(err);
-	// 	}
-	// },
+	async DELETE_CartRemoveProduct(req, res, next) {
+		try {
+			const service_payload = await ShopService.remove_cart_product(req);
+
+			return res.status(200).json({
+				success: true,
+				message: "ASD",
+				data: service_payload.cart_item,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
 
 	// async PATCH_CartCheckoutProduct(req, res, next) {
 	// 	try {
