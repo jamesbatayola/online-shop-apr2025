@@ -49,8 +49,6 @@ const ShopController = {
 		try {
 			await ShopService.add_to_cart(req);
 
-			console.log("finish");
-
 			return res.status(200).json({
 				success: true,
 				message: "ADDED TO CART",
@@ -102,16 +100,18 @@ const ShopController = {
 		}
 	},
 
-	// async PATCH_CartCheckoutProduct(req, res, next) {
-	// 	try {
-	// 		return res.status(200).json({
-	// 			success: true,
-	// 			message: "ASD",
-	// 		});
-	// 	} catch (err) {
-	// 		next(err);
-	// 	}
-	// },
+	async PUT_CartCheckoutProduct(req, res, next) {
+		try {
+			const service_payload = await ShopService.cart_checkout(req);
+
+			return res.status(200).json({
+				success: true,
+				message: "ASD",
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
 };
 
 export default ShopController;

@@ -18,7 +18,7 @@ router.patch("/cart/plus/:cart_item_id", Jwt_Auth, ShopController.PATCH_CartPlus
 router.patch("/cart/minus/:cart_item_id", Jwt_Auth, ShopController.PATCH_CartMinusProduct);
 
 router.delete("/cart/remove/:cart_item_id", Jwt_Auth, ShopController.DELETE_CartRemoveProduct);
-// router.post("/cart/checkout/:product_id", Jwt_Auth);
+router.put("/cart/checkout/:cart_item_id", Jwt_Auth, ShopController.PUT_CartCheckoutProduct);
 // router.post("/cart/checkout-all/cart_id", Jwt_Auth);
 
 export default router;

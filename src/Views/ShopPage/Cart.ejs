@@ -130,6 +130,22 @@
         })
     })
 
+    document.querySelectorAll('.checkout-btn').forEach(btn => {
+        btn.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+
+            const ev_parent = ev.target.parentElement;
+
+            const cart_item = ev_parent.closest('.cart-item');
+            const cart_item_id = cart_item.id;
+
+            const res = await fetch(`http://localhost:11111/shop/cart/checkout/${cart_item_id}`, { method: "PUT" });
+
+            const obj = await res.json();
+            console.log(obj)
+        })
+    })
+
 </script>
 
 <style>

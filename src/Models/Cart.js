@@ -15,6 +15,15 @@ const Cart = {
 		return res.rows[0];
 	},
 
+	async findById(cart_id) {
+		const query = `
+			SELECT * FROM carts
+			WHERE id = $1;
+		`;
+		const res = await client.query(query, [cart_id]);
+		return res.rows[0];
+	},
+
 	//FIND OR CREATE CART
 	async findOrCreate(user_id, status) {
 		// find cart by user_id and active status

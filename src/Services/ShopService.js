@@ -1,5 +1,8 @@
 import Product from "../Models/Product.js";
 import Cart from "../Models/Cart.js";
+import CartItem from "../Models/CartItem.js";
+import Checkout from "../Models/Checkout.js";
+import CheckoutItem from "../Models/CheckoutItems.js";
 
 const ShopService = {
 	async fetch_products() {
@@ -89,9 +92,25 @@ const ShopService = {
 
 		const cart_item = await Cart.removeProduct(cart_item_id);
 
-		console.log("FINISHED");
-
 		return { cart_item };
+	},
+
+	async cart_checkout(req) {
+		const { cart_item_id } = req.params;
+
+		const cart_item = await CartItem.findById(cart_item_id);
+		const cart = await Cart.findById(cart_item.cart_id);
+		const product = await Product.findById(cart_item.product_id);
+
+		const total_amount = product.price * cart_item.quantity;
+
+		const checkout = await Checkout.create(cart.id, cart_item.id, req.user.id, total_amount);
+		const checkout_item = await CheckoutItem.create(cart.id, cart_item.id, req.user.id, total_amount);
+
+		console.log(checkout);
+		console.log(checkout_item);
+
+		return {};
 	},
 };
 
