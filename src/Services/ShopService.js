@@ -123,6 +123,10 @@ const ShopService = {
 
 		return { checkout_items_display };
 	},
+
+	// async find_checkout_items(req) {
+	// 	const
+	// }
 };
 
 export default ShopService;

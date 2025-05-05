@@ -9,16 +9,20 @@ import "../Authentication/GoogleOAuth.js";
 import AuthController from "../Controllers/AuthController.js";
 import { Jwt_Auth } from "../Authentication/JsonWebToken.js";
 
+// VALIDATOR
+import { LoginSchema, SignupScheme } from "../Schemas/AuthSchema.js";
+import validate from "../Middleware/ZodValidator.js";
+
 const router = express.Router();
 
 router.get("/logout", Jwt_Auth, AuthController.GET_Logout);
 
 router.get("/", AuthController.GET_SignInPage);
 router.get("/signin", AuthController.GET_SignInPage);
-
-router.post("/signin", AuthController.POST_SignIn);
+router.post("/signin", validate(LoginSchema), AuthController.POST_SignIn);
 
 router.get("/signup", AuthController.GET_SignUpPage);
+router.put("/signup", validate(SignupScheme), AuthController.PUT_SignUp);
 
 router.get("/email-verification", AuthController.GET_EmailVerificationPage);
 router.post("/email-verification", AuthController.POST_EmailVerification);

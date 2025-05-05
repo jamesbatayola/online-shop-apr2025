@@ -143,7 +143,10 @@
             const res = await fetch(`http://localhost:11111/shop/cart/checkout/${cart_id}`, { method: "PUT" });
 
             const obj = await res.json();
-            console.log(obj)
+            
+            if(obj.success) {
+                window.location.href = `http://localhost:11111/shop/checkout`
+            }
         })
     })
 

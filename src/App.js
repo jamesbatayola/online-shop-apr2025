@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
 	res.status(status).json({
 		success: false,
 		message: err.message || "Something went wrong",
-		...(process.env.NODE_ENV === "development" && { stack: err.stack }), // only in dev
+		data: err.data || "NULL",
 	});
 });
 

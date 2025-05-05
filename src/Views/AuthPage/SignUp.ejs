@@ -8,6 +8,11 @@
         <form action="" class="signup-form" >
 
             <div>
+              <label for="">Name</label>
+              <input class="primary-input name-input" type="text" >
+            </div>
+
+            <div>
                 <label for="">Email</label>
                 <input class="primary-input email-input" type="text" >
             </div>
@@ -19,17 +24,43 @@
 
             <div>
               <label for="">Confirm Password</label>
-              <input class="primary-input password-input" type="password" >
+              <input class="primary-input confirm-password-input" type="password" >
             </div>
             
-            <button>Sign Up</button>
+            <button class="signup-btn" >Sign Up</button>
 
-            <a class="reset-password" href="">Already have an account?</a>
+            <a href="/">Already have an account?</a>
          
         </form>
  
     </div>
 </body>
+
+<script>
+  document.querySelector('.signup-btn').addEventListener('click', async (ev) => {
+    ev.preventDefault();
+
+    console.log(document.querySelector('.name-input').value);
+    console.log(document.querySelector('.email-input').value);
+    console.log(document.querySelector('.password-input').value);
+    console.log(document.querySelector('.confirm-password-input').value);
+
+    const res = await fetch(`http://localhost:11111/signup`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: document.querySelector('.name-input').value,
+          email: document.querySelector('.email-input').value,
+          password: document.querySelector('.password-input').value,
+          confirm_password: document.querySelector('.confirm-password-input').value
+        })
+    })
+
+    const obj = await res.json();
+    console.log(obj)
+
+  })
+</script>
 
 <style>
   .conatiner {

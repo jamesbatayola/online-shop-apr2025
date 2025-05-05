@@ -55,6 +55,8 @@
 
     const obj = await res.json();
     
+    console.log(obj);
+
     if(obj.success) {
       window.location.href = `http://localhost:11111/shop/home`
     }

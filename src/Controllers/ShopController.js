@@ -1,3 +1,4 @@
+import CheckoutItem from "../Models/CheckoutItems.js";
 import ShopService from "../Services/ShopService.js";
 
 const ShopController = {
@@ -120,6 +121,8 @@ const ShopController = {
 
 	async GET_CheckoutPage(req, res, next) {
 		try {
+			const checkout_items = await ShopService.display_checkout_items(req);
+
 			res.render("ShopPage/Checkout", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
