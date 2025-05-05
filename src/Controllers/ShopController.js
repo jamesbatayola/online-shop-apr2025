@@ -27,6 +27,8 @@ const ShopController = {
 		try {
 			const cart_products = await ShopService.fetch_cart_products(req);
 
+			const cart_id = cart_products[0]?.cart_id || null;
+
 			// process display
 			const products_to_display = [];
 
@@ -38,6 +40,7 @@ const ShopController = {
 
 			return res.render("ShopPage/Cart", {
 				products: products_to_display,
+				cart_id: cart_id,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
 		} catch (err) {
@@ -104,9 +107,21 @@ const ShopController = {
 		try {
 			const service_payload = await ShopService.cart_checkout(req);
 
+			console.log("FINISHED");
+
 			return res.status(200).json({
 				success: true,
-				message: "ASD",
+				message: "CHECKOUTED!",
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	async GET_CheckoutPage(req, res, next) {
+		try {
+			res.render("ShopPage/Checkout", {
+				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 			});
 		} catch (err) {
 			next(err);

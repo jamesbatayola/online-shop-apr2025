@@ -1,9 +1,9 @@
-import client from "../Database/Index.js";
+import db from "../Database/Index.js";
 import Product from "./Product.js";
 
 const Cart = {
 	async create(user_id, status) {
-		const res = await client.query(
+		const res = await db.query(
 			`
                 INSERT INTO carts (user_id, status)
                 VALUES ($1, $2)
@@ -20,14 +20,14 @@ const Cart = {
 			SELECT * FROM carts
 			WHERE id = $1;
 		`;
-		const res = await client.query(query, [cart_id]);
+		const res = await db.query(query, [cart_id]);
 		return res.rows[0];
 	},
 
 	//FIND OR CREATE CART
 	async findOrCreate(user_id, status) {
 		// find cart by user_id and active status
-		let res = await client.query(
+		let res = await db.query(
 			`
 	            SELECT * FROM carts
 	            WHERE user_id = $1 AND status = $2
@@ -51,7 +51,7 @@ const Cart = {
 		// find cart by user_id and active status
 		const cart = await this.findOrCreate(user_id, status);
 
-		const res = await client.query(
+		const res = await db.query(
 			`
                 INSERT INTO cart_items (cart_id, product_id)
                 VALUES($1, $2)
@@ -67,7 +67,7 @@ const Cart = {
 		// find cart by user_id and active status
 		const user_cart = await this.findOrCreate(user_id, status);
 
-		let res = await client.query(
+		let res = await db.query(
 			`
                 SELECT * FROM cart_items
                 WHERE cart_id = $1 AND product_id = $2
@@ -86,7 +86,7 @@ const Cart = {
 
 	// returns cart item
 	async addProductQuantity(cart_item_id) {
-		const res = await client.query(
+		const res = await db.query(
 			`
                 UPDATE cart_items
                 SET quantity = quantity + 1
@@ -100,7 +100,7 @@ const Cart = {
 	},
 
 	async minusProductQuantity(cart_item_id) {
-		const res = await client.query(
+		const res = await db.query(
 			`
 				UPDATE cart_items
 				SET quantity = quantity - 1
@@ -114,7 +114,7 @@ const Cart = {
 	},
 
 	async removeProduct(cart_item_id) {
-		const res = await client.query(
+		const res = await db.query(
 			`
 				DELETE FROM cart_items
 				WHERE id = $1
@@ -127,7 +127,7 @@ const Cart = {
 	},
 
 	async findProducts(cart_id) {
-		const res = await client.query(
+		const res = await db.query(
 			`
 				SELECT * FROM cart_items
 				WHERE cart_id = $1;
@@ -139,7 +139,7 @@ const Cart = {
 	},
 
 	async findProduct(cart_id, product_id) {
-		const res = await client.query(
+		const res = await db.query(
 			`
                 SELECT * FROM cart_items
                 WHERE cart_id = $1 AND product_id = $2
@@ -147,6 +147,17 @@ const Cart = {
 			[cart_id, product_id]
 		);
 
+		return res.rows[0];
+	},
+
+	async cartInactive(cart_id) {
+		const query = `
+			UPDATE carts
+			SET status = 'checked_out'
+			WHERE id = $1
+			RETURNING *;
+		`;
+		const res = await db.query(query, [cart_id]);
 		return res.rows[0];
 	},
 };

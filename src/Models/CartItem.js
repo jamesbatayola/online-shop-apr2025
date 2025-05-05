@@ -1,4 +1,4 @@
-import client from "../Database/Index.js";
+import db from "../Database/Index.js";
 
 const CartItem = {
 	async findById(cart_item_id) {
@@ -6,8 +6,26 @@ const CartItem = {
             SELECT * FROM cart_items
             WHERE id = $1;
         `;
-		const res = await client.query(query, [cart_item_id]);
+		const res = await db.query(query, [cart_item_id]);
 		return res.rows[0];
+	},
+
+	async removeById(id) {
+		const query = `
+			DELETE FROM cart_items
+			WHERE id = $1;
+		`;
+		const res = await db.query(query, [id]);
+		return res.rows[0];
+	},
+
+	async findByCart(cart_id) {
+		const query = `
+			SELECT * FROM cart_items
+			WHERE cart_id = $1;
+		`;
+		const res = await db.query(query, [cart_id]);
+		return res.rows;
 	},
 };
 

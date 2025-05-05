@@ -96,21 +96,32 @@ const ShopService = {
 	},
 
 	async cart_checkout(req) {
-		const { cart_item_id } = req.params;
+		const { cart_id } = req.params;
 
-		const cart_item = await CartItem.findById(cart_item_id);
-		const cart = await Cart.findById(cart_item.cart_id);
-		const product = await Product.findById(cart_item.product_id);
+		const cart_items = await CartItem.findByCart(cart_id);
 
-		const total_amount = product.price * cart_item.quantity;
+		const checkout_items_display = [];
 
-		const checkout = await Checkout.create(cart.id, cart_item.id, req.user.id, total_amount);
-		const checkout_item = await CheckoutItem.create(cart.id, cart_item.id, req.user.id, total_amount);
+		const checkout = await Checkout.create(cart_id);
 
-		console.log(checkout);
-		console.log(checkout_item);
+		for (let cart_item of cart_items) {
+			const product = await Product.findById(cart_item.product_id);
+			const total_price = product.price * cart_item.quantity;
 
-		return {};
+			const checkout_item = await CheckoutItem.create(checkout.id, cart_id, product.id, cart_item.quantity, total_price);
+
+			checkout_items_display.push(checkout_item);
+
+			// Cart Items is now removed
+			await CartItem.removeById(cart_item.id);
+		}
+
+		// Cart is now inactive
+		await Cart.cartInactive(cart_id);
+
+		console.log("FINISHED");
+
+		return { checkout_items_display };
 	},
 };
 
