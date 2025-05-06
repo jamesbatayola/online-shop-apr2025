@@ -60,8 +60,6 @@
         btn.addEventListener('click', async (ev) => {
             ev.preventDefault();
 
-            console.log(csrfToken)
-
             const product_id = ev.target.parentElement.children[0].value.trim();
 
             const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, { 

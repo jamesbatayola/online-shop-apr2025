@@ -47,8 +47,10 @@
 
 <script>
 
-    const admin_content = document.querySelector('.admin-content')
+    const csrfToken = document.querySelector('.csrfToken').value;
 
+    const admin_content = document.querySelector('.admin-content')
+    
     // ------- INITIAL LOAD ------- //
     // - form liseter is set to inital page load
 
@@ -67,6 +69,9 @@
 
         const res = await fetch(`http://localhost:11111/admin?mode=add-product`, {
             method: "POST",
+            headers: {
+                "x-csrf-token": csrfToken,
+            },
             body: form_data,
         })
 
@@ -125,6 +130,9 @@
 
         const res = await fetch(`http://localhost:11111/admin?mode=view_products`, {
             method: "POST",
+            headers: {
+                "x-csrf-token": csrfToken,
+            },
         });
 
         const obj = await res.json();
@@ -163,6 +171,9 @@
 
             const res = await fetch(`http://localhost:11111/admin?mode=view_product&id=${product_id}`, {
                 method: 'POST',
+                headers: {
+                "x-csrf-token": csrfToken,
+            },
             });
 
             const obj = await res.json();
@@ -220,6 +231,9 @@
 
                     const res = await fetch(`http://localhost:11111/admin/edit-product`, {
                         method: "PATCH",
+                        headers: {
+                            "x-csrf-token": csrfToken,
+                        },
                         body: form_data
                     })
 
@@ -236,6 +250,9 @@
 
                     const res = await fetch(`http://localhost:11111/admin/delete-product/${product_id}`, {
                         method: "DELETE",
+                        headers: {
+                            "x-csrf-token": csrfToken,
+                        },
                     })
 
                     const obj = await res.json();
