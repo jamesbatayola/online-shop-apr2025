@@ -21,9 +21,17 @@ const ShopService = {
 	async add_to_cart(req) {
 		const { product_id } = req.params;
 
-		const res = await Cart.findOrAddProduct(req.user.id, "active", product_id);
+		// find user cart
+		const cart = await Cart.findOrCreate(req.user.id);
 
-		return res;
+		const cart_item = await CartItem.findByCartAndProduct(cart.id, product_id);
+
+		// check cart item existance
+		if (!cart_item) {
+			return await CartItem.addItems(cart.id, product_id); // insert new cart item
+		} else {
+			return await Cart.addProductQuantity(cart_item.id); // increment quantity
+		}
 	},
 
 	async display_cart_products(cart_id, product_id) {
@@ -112,6 +120,8 @@ const ShopService = {
 
 			checkout_items_display.push(checkout_item);
 
+			await Cart.create(req.user.id);
+
 			// Cart Items is now removed
 			await CartItem.removeById(cart_item.id);
 		}
@@ -124,9 +134,17 @@ const ShopService = {
 		return { checkout_items_display };
 	},
 
-	// async find_checkout_items(req) {
-	// 	const
-	// }
+	async get_checkout_items(req) {
+		const cart = await Cart.findByUserId(req.user.id);
+
+		if (!cart) {
+			return console.log("CART DOES NOT EXIST");
+		}
+
+		const checkout_items = await CheckoutItem.findByCart(cart.id);
+
+		return checkout_items;
+	},
 };
 
 export default ShopService;

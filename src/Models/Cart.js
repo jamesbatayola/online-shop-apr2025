@@ -2,16 +2,26 @@ import db from "../Database/Index.js";
 import Product from "./Product.js";
 
 const Cart = {
-	async create(user_id, status) {
+	async create(user_id) {
 		const res = await db.query(
 			`
                 INSERT INTO carts (user_id, status)
                 VALUES ($1, $2)
                 RETURNING *;
             `,
-			[user_id, status]
+			[user_id, "active"]
 		);
 
+		return res.rows[0];
+	},
+
+	async findByUserId(user_id) {
+		const query = `
+			SELECT * 
+			FROM carts
+			WHERE user_id = $1 AND status = 'active'
+		`;
+		const res = await db.query(query, [user_id]);
 		return res.rows[0];
 	},
 
@@ -25,23 +35,15 @@ const Cart = {
 	},
 
 	//FIND OR CREATE CART
-	async findOrCreate(user_id, status) {
+	async findOrCreate(user_id) {
 		// find cart by user_id and active status
-		let res = await db.query(
-			`
-	            SELECT * FROM carts
-	            WHERE user_id = $1 AND status = $2
-				LIMIT 1;
-	        `,
-			[user_id, status]
-		);
+		const res = await this.findByUserId(user_id);
 
-		// if that cart does no exist we create new one
-		if (res.rows.length <= 0) {
-			return await this.create(user_id, status);
+		if (!res) {
+			return await this.create(user_id);
 		}
 
-		return res.rows[0];
+		return res;
 	},
 
 	// TO ADD PRODUCT IN CART
@@ -69,7 +71,8 @@ const Cart = {
 
 		let res = await db.query(
 			`
-                SELECT * FROM cart_items
+                SELECT *
+				FROM cart_items
                 WHERE cart_id = $1 AND product_id = $2
 				LIMIT 1;
             `,
@@ -139,14 +142,13 @@ const Cart = {
 	},
 
 	async findProduct(cart_id, product_id) {
-		const res = await db.query(
-			`
-                SELECT * FROM cart_items
-                WHERE cart_id = $1 AND product_id = $2
-            `,
-			[cart_id, product_id]
-		);
+		const query = `
+			SELECT * 
+			FROM cart_items
+            WHERE cart_id = $1 AND product_id = $2
+		`;
 
+		const res = await db.query(query, [cart_id, product_id]);
 		return res.rows[0];
 	},
 
@@ -157,6 +159,7 @@ const Cart = {
 			WHERE id = $1
 			RETURNING *;
 		`;
+
 		const res = await db.query(query, [cart_id]);
 		return res.rows[0];
 	},

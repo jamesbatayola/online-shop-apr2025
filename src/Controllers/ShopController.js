@@ -55,8 +55,6 @@ const ShopController = {
 	},
 
 	async POST_CartAddProduct(req, res, next) {
-		console.log("ASD");
-
 		try {
 			await ShopService.add_to_cart(req);
 
@@ -128,7 +126,7 @@ const ShopController = {
 
 	async GET_CheckoutPage(req, res, next) {
 		try {
-			const service_payload = await ShopService.display_checkout_items(req);
+			const service_payload = await ShopService.get_checkout_items(req);
 
 			res.render("ShopPage/Checkout", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,

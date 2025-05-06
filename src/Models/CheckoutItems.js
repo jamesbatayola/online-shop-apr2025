@@ -21,6 +21,17 @@ const CheckoutItem = {
 		const res = db.query(query, [id]);
 		return res.rows[0];
 	},
+
+	async findByCart(cart_id) {
+		const query = `
+			SELECT *
+			FROM checkout_items
+			WHERE cart_id = $1;
+		`;
+
+		const res = await db.query(query, [cart_id]);
+		return res.rows;
+	},
 };
 
 export default CheckoutItem;
