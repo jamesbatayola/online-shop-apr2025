@@ -11,7 +11,6 @@ const router = express.Router();
 router.get("/home", Utils.isLoggedIn, ShopController.GET_HomePage);
 
 router.get("/cart", Jwt_Auth, ShopController.GET_CartPage);
-
 router.post("/addcart/:product_id", Jwt_Auth, ShopController.POST_CartAddProduct);
 
 router.patch("/cart/plus/:cart_item_id", Jwt_Auth, ShopController.PATCH_CartPlusProduct);

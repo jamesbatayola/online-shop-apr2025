@@ -5,6 +5,8 @@
 <body>
     <%- include('../Shared/Navbar.ejs') %>
 
+    <input class="csrfToken" type="hidden" value="<%= csrfToken %>" readonly>
+
     <div class="container">
         
         <div>
@@ -39,6 +41,8 @@
 
 <script>
 
+    const csrfToken = document.querySelector('.csrfToken').value;
+  
     document.querySelector('form').addEventListener('submit', async(ev) => {
         ev.preventDefault();
 
@@ -56,9 +60,16 @@
         btn.addEventListener('click', async (ev) => {
             ev.preventDefault();
 
+            console.log(csrfToken)
+
             const product_id = ev.target.parentElement.children[0].value.trim();
 
-            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, { method: "POST" });
+            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, { 
+                method: "POST",
+                headers: {
+                    "x-csrf-token": csrfToken,
+                }
+             });
 
             const obj = await res.json();
             console.log(obj);

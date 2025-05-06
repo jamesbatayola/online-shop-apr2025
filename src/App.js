@@ -14,15 +14,22 @@ const __dirname = dirname(__filename);
 import path from "path";
 import kleur from "kleur";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import client from "./Database/Index.js";
+
+import csrf from "./Authentication/CsrfCsrf.js";
 
 // SEQUENCE STARTING POINT //
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+
+// Csrf protection
+app.use(csrf.doubleCsrfProtection);
 
 app.use(express.static(path.join(__dirname, "Public")));
 

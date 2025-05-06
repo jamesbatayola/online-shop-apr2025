@@ -15,6 +15,7 @@ const AdminController = {
 		try {
 			res.render("AdminPage/Index", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+				csrfToken: req.csrfToken(),
 			});
 		} catch (err) {
 			next(err);

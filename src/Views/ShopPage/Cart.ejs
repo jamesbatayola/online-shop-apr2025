@@ -5,6 +5,8 @@
 <body>
     <%- include('../Shared/Navbar.ejs') %>
     
+    <input type="hidden" value="<%= csrfToken %>" readonly>
+
     <div class="container">
 
         <% if(products.length <= 0) { %>
@@ -124,7 +126,12 @@
             const cart_item = ev_parent.closest('.cart-item');
             const cart_item_id = cart_item.id;
 
-            const res = await fetch(`http://localhost:11111/shop/cart/remove/${cart_item_id}`, { method: "DELETE"  });
+            const res = await fetch(`http://localhost:11111/shop/cart/remove/${cart_item_id}`, { 
+                method: "DELETE",
+                headers: {
+                    "x-csrf-token": 
+                }
+            });
 
             const obj = await res.json();
 

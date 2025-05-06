@@ -91,6 +91,7 @@ const AuthController = {
 		try {
 			res.render("AuthPage/EmailVerification", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+				csrfToken: req.csrfToken(),
 			});
 		} catch (err) {
 			next(err);

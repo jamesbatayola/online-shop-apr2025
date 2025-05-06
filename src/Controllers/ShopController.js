@@ -1,14 +1,18 @@
-import CheckoutItem from "../Models/CheckoutItems.js";
+// import CheckoutItem from "../Models/CheckoutItems.js";
 import ShopService from "../Services/ShopService.js";
+import csrf from "../Authentication/CsrfCsrf.js";
 
 const ShopController = {
 	async GET_HomePage(req, res, next) {
 		try {
 			const products = await ShopService.fetch_products();
 
+			const csrfToken = csrf.generateCsrfToken(req, res);
+
 			return res.render("ShopPage/Home", {
 				products: products,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+				csrfToken: csrfToken,
 			});
 		} catch (err) {
 			next(err);
@@ -43,6 +47,7 @@ const ShopController = {
 				products: products_to_display,
 				cart_id: cart_id,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+				csrfToken: req.csrfToken(),
 			});
 		} catch (err) {
 			next(err);
@@ -50,6 +55,8 @@ const ShopController = {
 	},
 
 	async POST_CartAddProduct(req, res, next) {
+		console.log("ASD");
+
 		try {
 			await ShopService.add_to_cart(req);
 
@@ -121,10 +128,11 @@ const ShopController = {
 
 	async GET_CheckoutPage(req, res, next) {
 		try {
-			const checkout_items = await ShopService.display_checkout_items(req);
+			const service_payload = await ShopService.display_checkout_items(req);
 
 			res.render("ShopPage/Checkout", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
+				csrfToken: req.csrfToken(),
 			});
 		} catch (err) {
 			next(err);
