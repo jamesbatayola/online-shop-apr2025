@@ -19,6 +19,8 @@ const ShopService = {
 	},
 
 	async add_to_cart(req) {
+		console.log("A");
+
 		const { product_id } = req.params;
 
 		// find user cart
@@ -132,7 +134,7 @@ const ShopService = {
 	},
 
 	async get_checkout_items(req) {
-		const carts = await Cart.findCheckouts(req.user.id);
+		const carts = await Cart.findCheckouts(req.user.id); // list of checked out carts
 
 		if (!carts) {
 			return console.log("CART DOES NOT EXIST");
@@ -141,7 +143,7 @@ const ShopService = {
 		const checkouts = [];
 
 		for (let cart of carts) {
-			const _checkout = await Checkout.findByCartOnProcess(cart.id);
+			const _checkout = await Checkout.findByCartAndOnProcess(cart.id);
 
 			const temp = {
 				checkout_id: _checkout.id,
@@ -152,6 +154,18 @@ const ShopService = {
 		}
 
 		return { checkouts };
+	},
+
+	async removeCheckout(req) {
+		const { checkout_id } = req.body;
+
+		const checkout = await Checkout.remove(checkout_id);
+
+		console.log(checkout);
+
+		await Cart.remove(checkout.cart_id); // removes the cart linked to the checkout
+
+		return { checkout };
 	},
 };
 

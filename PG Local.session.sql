@@ -41,3 +41,4 @@ UPDATE COLUMN cart
 DELETE FROM checkout_items;
 DELETE FROM checkouts;
 DELETE FROM carts;
+

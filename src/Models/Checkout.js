@@ -22,7 +22,7 @@ const Checkout = {
 
 	async findByCart(cart_id) {},
 
-	async findByCartOnProcess(cart_id) {
+	async findByCartAndOnProcess(cart_id) {
 		const query = `
 			SELECT * 
 			FROM checkouts
@@ -43,6 +43,17 @@ const Checkout = {
 
 		const res = await db.query(query, [cart_id, "delivered"]);
 		return res.rows;
+	},
+
+	async remove(id) {
+		const query = `
+			DELETE FROM checkouts
+			WHERE id = $1
+			RETURNING *;
+		`;
+
+		const res = await db.query(query, [id]);
+		return res.rows[0];
 	},
 };
 

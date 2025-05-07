@@ -43,6 +43,17 @@ const CheckoutItem = {
 		const res = await db.query(query, [checkout_id]);
 		return res.rows;
 	},
+
+	async remove(id) {
+		const query = `
+			DELETE FROM checkout_items
+			WHERE id = $1
+			RETURNING *;
+		`;
+
+		const res = await db.query(query, [id]);
+		return res.rows[0];
+	},
 };
 
 export default CheckoutItem;

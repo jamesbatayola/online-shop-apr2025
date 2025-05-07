@@ -1,17 +1,25 @@
 import db from "../Database/Index.js";
-import Product from "./Product.js";
 
 const Cart = {
 	async create(user_id) {
-		const res = await db.query(
-			`
-                INSERT INTO carts (user_id, status)
-                VALUES ($1, $2)
-                RETURNING *;
-            `,
-			[user_id, "active"]
-		);
+		const query = `
+			INSERT INTO carts (user_id, status)
+            VALUES ($1, $2)
+            RETURNING *;
+		`;
 
+		const res = await db.query(query, [user_id, "active"]);
+		return res.rows[0];
+	},
+
+	async remove(id) {
+		const query = `
+			DELETE FROM carts
+			WHERE id = $1
+			RETURNING *;
+		`;
+
+		const res = await db.query(query, [id]);
 		return res.rows[0];
 	},
 
@@ -64,6 +72,7 @@ const Cart = {
 		const res = await this.findByUserId(user_id);
 
 		if (!res) {
+			console.log("C");
 			return await this.create(user_id);
 		}
 

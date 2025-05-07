@@ -136,6 +136,20 @@ const ShopController = {
 			next(err);
 		}
 	},
+
+	async DELETE_Checkout(req, res, next) {
+		try {
+			const service_payload = await ShopService.removeCheckout(req);
+
+			res.status(200).json({
+				success: true,
+				message: "Order successfully canceled",
+				data: service_payload.checkout,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
 };
 
 export default ShopController;

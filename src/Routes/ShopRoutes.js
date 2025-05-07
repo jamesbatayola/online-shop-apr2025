@@ -22,5 +22,6 @@ router.put("/cart/checkout/:cart_id", Jwt_Auth, ShopController.PUT_CartCheckoutP
 // router.post("/cart/checkout-all/cart_id", Jwt_Auth);
 
 router.get("/checkout", Jwt_Auth, ShopController.GET_CheckoutPage);
+router.delete("/checkout/cancel-order", Jwt_Auth, ShopController.DELETE_Checkout);
 
 export default router;

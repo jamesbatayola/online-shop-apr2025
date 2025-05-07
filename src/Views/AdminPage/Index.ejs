@@ -67,7 +67,7 @@
         form_data.append('description', document.querySelector('.product-description').value);
         form_data.append('image_url', document.querySelector('.product-image').files[0]);
 
-        const res = await fetch(`http://localhost:11111/admin?mode=add-product`, {
+        const res = await fetch(`/admin?mode=add-product`, {
             method: "POST",
             headers: {
                 "x-csrf-token": csrfToken,
@@ -128,7 +128,7 @@
         // change current url dynamically
         window.history.pushState({ mode: "view" }, "", "/admin?mode=view_products");  
 
-        const res = await fetch(`http://localhost:11111/admin?mode=view_products`, {
+        const res = await fetch(`/admin?mode=view_products`, {
             method: "POST",
             headers: {
                 "x-csrf-token": csrfToken,
@@ -169,7 +169,7 @@
             
             window.history.pushState({ mode: "view" }, "", `/admin?mode=view_product&id=${product_id}`)
 
-            const res = await fetch(`http://localhost:11111/admin?mode=view_product&id=${product_id}`, {
+            const res = await fetch(`/admin?mode=view_product&id=${product_id}`, {
                 method: 'POST',
                 headers: {
                 "x-csrf-token": csrfToken,
@@ -229,7 +229,7 @@
                     form_data.append("description", document.querySelector(".product-description").value);
                     form_data.append("image_url", document.querySelector(".product-image").files[0]);
 
-                    const res = await fetch(`http://localhost:11111/admin/edit-product`, {
+                    const res = await fetch(`/admin/edit-product`, {
                         method: "PATCH",
                         headers: {
                             "x-csrf-token": csrfToken,
@@ -248,7 +248,7 @@
 
                     const product_id = ev.target.parentElement.children[0].children[1].value;
 
-                    const res = await fetch(`http://localhost:11111/admin/delete-product/${product_id}`, {
+                    const res = await fetch(`/admin/delete-product/${product_id}`, {
                         method: "DELETE",
                         headers: {
                             "x-csrf-token": csrfToken,

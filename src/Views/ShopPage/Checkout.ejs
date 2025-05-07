@@ -9,9 +9,9 @@
 
     <div class="container">
 
-        <% if(!checkouts) { %>
+        <% if(checkouts.length <= 0) { %>
 
-            <h1>No checkouts</h1>
+            <h1>Empty</h1>
 
         <% } else { %>
 
@@ -19,9 +19,11 @@
 
                 <div class="checkout-container">
 
+                    <input class="checkout-id" type="hidden" value="<%= checkout.checkout_id %>"  readonly>
+
                     <div style="display: flex; gap: 10px;">
                         <label for="">Checkout ID</label>
-                        <p><%= checkout.checkout_id %></p>
+                        <p ><%= checkout.checkout_id %></p>
                     </div>
                    
                     <% for(let item of checkout.items) { %>   
@@ -59,8 +61,8 @@
 
 
                     <div class="button-container">
-                        <button class="cancel-btn" >Track</button>
-                        <button class="cancel-btn" >Cancel order</button>
+                        <button class="track-order-btn" >Track</button>
+                        <button class="cancel-order-btn" >Cancel order</button>
                     </div>
                 
                 </div>
@@ -72,6 +74,34 @@
     </div>
 
 </body>
+
+<script>
+
+    const  csrf_token = document.querySelector('.csrfToken').value;
+
+    document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+        btn.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+
+            const checkout_id = ev.target.parentElement.closest('.checkout-container').querySelector('.checkout-id').value;
+          
+            const res = await fetch(`/shop/checkout/cancel-order`, {
+                method: "DELETE",
+                headers: { 
+                    "x-csrf-token": csrf_token,
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    checkout_id: checkout_id,
+                })
+            })
+
+            const obj = await res.json();
+            console.log(obj);
+        })
+    })
+
+</script>
 
 <style>
 
@@ -88,11 +118,13 @@
         border-radius: 0.3rem;
         box-shadow: 2px 2px 6px black;
         padding: 0.4rem;
+        margin-bottom: 1rem;
     }
 
     .item-container {
         border: 1px solid orange;
         padding: 0.5rem;
+        margin-bottom: 0.5rem;
     }
 
     .button-container {

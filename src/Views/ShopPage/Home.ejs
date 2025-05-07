@@ -48,7 +48,7 @@
 
         const search_input = document.querySelector('.search-input').value;
 
-        const res = await fetch(`http://localhost:11111/shop/home/search=${search_input}`);
+        const res = await fetch(`/shop/home/search=${search_input}`);
 
         const obj = await res.json();
 
@@ -62,7 +62,7 @@
 
             const product_id = ev.target.parentElement.children[0].value.trim();
 
-            const res = await fetch(`http://localhost:11111/shop/addcart/${product_id}`, { 
+            const res = await fetch(`/shop/addcart/${product_id}`, { 
                 method: "POST",
                 headers: {
                     "x-csrf-token": csrfToken,
