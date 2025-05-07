@@ -28,7 +28,7 @@
                    
                     <% for(let item of checkout.items) { %>   
 
-                        <div class="item-container">
+                        <div class="item-container ">
                             
                             <div style="display: flex; gap: 10px;">
                                 <label for="" >checkout_item_id: </label>
@@ -79,11 +79,15 @@
 
     const  csrf_token = document.querySelector('.csrfToken').value;
 
+    const container = document.querySelector('.container');
+
     document.querySelectorAll('.cancel-order-btn').forEach(btn => {
         btn.addEventListener('click', async (ev) => {
             ev.preventDefault();
 
-            const checkout_id = ev.target.parentElement.closest('.checkout-container').querySelector('.checkout-id').value;
+            const checkout_container = ev.target.parentElement.closest('.checkout-container');
+
+            const checkout_id = checkout_container.querySelector('.checkout-id').value;
           
             const res = await fetch(`/shop/checkout/cancel-order`, {
                 method: "DELETE",
@@ -98,17 +102,24 @@
 
             const obj = await res.json();
             console.log(obj);
+
+            if(obj.success) {
+                container.removeChild(checkout_container);
+            }
+
         })
     })
 
 </script>
 
 <style>
-
     .container {
-        width: 90%;
-        margin: 1rem auto;
         border: 1px solid black;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
         padding: 1rem;
     }
 
