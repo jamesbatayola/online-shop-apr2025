@@ -120,30 +120,38 @@ const ShopService = {
 
 			checkout_items_display.push(checkout_item);
 
-			await Cart.create(req.user.id);
-
 			// Cart Items is now removed
 			await CartItem.removeById(cart_item.id);
 		}
 
-		// Cart is now inactive
-		await Cart.cartInactive(cart_id);
+		await Cart.cartInactive(cart_id); // old cart becomes inactive
 
-		console.log("FINISHED");
+		await Cart.create(req.user.id); // new cart added
 
 		return { checkout_items_display };
 	},
 
 	async get_checkout_items(req) {
-		const cart = await Cart.findByUserId(req.user.id);
+		const carts = await Cart.findCheckouts(req.user.id);
 
-		if (!cart) {
+		if (!carts) {
 			return console.log("CART DOES NOT EXIST");
 		}
 
-		const checkout_items = await CheckoutItem.findByCart(cart.id);
+		const checkouts = [];
 
-		return checkout_items;
+		for (let cart of carts) {
+			const _checkout = await Checkout.findByCartOnProcess(cart.id);
+
+			const temp = {
+				checkout_id: _checkout.id,
+				items: await CheckoutItem.findByCheckoutId(_checkout.id),
+			};
+
+			checkouts.push(temp);
+		}
+
+		return { checkouts };
 	},
 };
 

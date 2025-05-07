@@ -22,15 +22,15 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TYPE cart_status AS ENUM ('active', 'checked_out');
 CREATE TABLE IF NOT EXISTS carts (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
-    status ENUM('active', 'checked_out') DEFAULT 'active'
-
-    FOREIGN KEY (user_id) REFERENCES users (id),
-
+    status cart_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 -- JUNCTION TABLE
@@ -39,25 +39,24 @@ CREATE TABLE IF NOT EXISTS cart_item (
     quantity INTEGER DEFAULT 1,
     cart_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
-    
-    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-
     UNIQUE (cart_id, product_id),
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
 );
 
+CREATE TYPE order_status AS ENUM ('on_process', 'delivered');
 CREATE TABLE IF NOT EXISTS checkouts (
     id SERIAL PRIMARY KEY,
     cart_id INTEGER NOT NULL,
+    status order_status DEFAULT 'on_process',
     checkout_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS checkout_items (
@@ -67,14 +66,13 @@ CREATE TABLE IF NOT EXISTS checkout_items (
     cart_item_id INTEGER NOT NULL,
     user_id UUID NOT NULL,
     total_ammount DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
     FOREIGN KEY (checked_id) REFERENCES checkouts (id) ON DELETE CASCADE,
     FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
     FOREIGN KEY (cart_item_id) REFERENCES cart_items (id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (

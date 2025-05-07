@@ -19,8 +19,32 @@ const Cart = {
 		const query = `
 			SELECT * 
 			FROM carts
-			WHERE user_id = $1 AND status = 'active'
+			WHERE user_id = $1 AND status = 'active';
 		`;
+		const res = await db.query(query, [user_id]);
+		return res.rows[0];
+	},
+
+	async findCheckouts(user_id) {
+		const query = `
+			SELECT *
+			FROM carts
+			WHERE user_id = $1 AND status = $2;
+		`;
+
+		const res = await db.query(query, [user_id, "checked_out"]);
+		return res.rows;
+	},
+
+	async findLatestCheckout(user_id) {
+		const query = `
+			SELECT *
+			FROM carts
+			WHERE user_id = $1
+			ORDER BY created_at ASC
+			LIMIT 1;
+		`;
+
 		const res = await db.query(query, [user_id]);
 		return res.rows[0];
 	},

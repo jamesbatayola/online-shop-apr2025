@@ -9,7 +9,65 @@
 
     <div class="container">
 
-        
+        <% if(!checkouts) { %>
+
+            <h1>No checkouts</h1>
+
+        <% } else { %>
+
+            <% for(let checkout of checkouts) { %>
+
+                <div class="checkout-container">
+
+                    <div style="display: flex; gap: 10px;">
+                        <label for="">Checkout ID</label>
+                        <p><%= checkout.checkout_id %></p>
+                    </div>
+                   
+                    <% for(let item of checkout.items) { %>   
+
+                        <div class="item-container">
+                            
+                            <div style="display: flex; gap: 10px;">
+                                <label for="" >checkout_item_id: </label>
+                                <p> <%= item.id %></p>
+                            </div>
+                           
+                            <div  style="display: flex; gap: 10px;">
+                                <label for="">product_id: </label>
+                                <p><%= item.product_id %></p>
+                            </div>
+                         
+                            <div style="display: flex; gap: 10px;">
+                                <label for="" >cart_id: </label>
+                                <p> <%= item.cart_id %></p>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <label for="" >total_quantity: </label>
+                                <p> <%= item.total_quantity %></p>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <label for="" >total_price: </label>
+                                <p> <%= item.total_price %></p>
+                            </div>
+
+                        </div>
+
+                    <% } %>
+
+
+                    <div class="button-container">
+                        <button class="cancel-btn" >Track</button>
+                        <button class="cancel-btn" >Cancel order</button>
+                    </div>
+                
+                </div>
+
+            <% } %>
+
+        <% } %>
 
     </div>
 
@@ -24,6 +82,21 @@
         padding: 1rem;
     }
 
+    .checkout-container {
+        border: 1px solid red;
+        width: 100%;
+        border-radius: 0.3rem;
+        box-shadow: 2px 2px 6px black;
+        padding: 0.4rem;
+    }
 
+    .item-container {
+        border: 1px solid orange;
+        padding: 0.5rem;
+    }
+
+    .button-container {
+        margin-top: 1rem;
+    }
 
 </style>

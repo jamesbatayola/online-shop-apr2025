@@ -1,4 +1,4 @@
-import client from "../Database/Index.js";
+import db from "../Database/Index.js";
 
 const Checkout = {
 	async create(cart_id) {
@@ -7,7 +7,7 @@ const Checkout = {
             VALUES ($1)
             RETURNING *;
         `;
-		const res = await client.query(query, [cart_id]);
+		const res = await db.query(query, [cart_id]);
 		return res.rows[0];
 	},
 
@@ -16,23 +16,34 @@ const Checkout = {
             SELECT * FROM checkouts
             WHERE id = $1;
         `;
-		const res = await client.query(query, [id]);
+		const res = await db.query(query, [id]);
 		return res.rows[0];
 	},
 
 	async findByCart(cart_id) {},
 
-	// TODO:
+	async findByCartOnProcess(cart_id) {
+		const query = `
+			SELECT * 
+			FROM checkouts
+			WHERE cart_id = $1 AND status = $2
+			LIMIT 1;
+		`;
 
-	// async findOrCreate(cart_id) {
-	// 	const checkout = await this.findById(id);
+		const res = await db.query(query, [cart_id, "on_process"]);
+		return res.rows[0];
+	},
 
-	// 	if (checkout) {
-	// 		return checkout;
-	// 	}
+	async findByCartDelivered(cart_id) {
+		const query = `
+			SELECT *
+			FROM checkouts
+			WHERE cart_id = $1 AND staus = $2;
+		`;
 
-	// 	return this.create(cart_id);
-	// },
+		const res = await db.query(query, [cart_id, "delivered"]);
+		return res.rows;
+	},
 };
 
 export default Checkout;

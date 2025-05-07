@@ -1,6 +1,7 @@
 // import CheckoutItem from "../Models/CheckoutItems.js";
 import ShopService from "../Services/ShopService.js";
 import csrf from "../Authentication/CsrfCsrf.js";
+import Checkout from "../Models/Checkout.js";
 
 const ShopController = {
 	async GET_HomePage(req, res, next) {
@@ -113,8 +114,6 @@ const ShopController = {
 		try {
 			const service_payload = await ShopService.cart_checkout(req);
 
-			console.log("FINISHED");
-
 			return res.status(200).json({
 				success: true,
 				message: "CHECKOUTED!",
@@ -131,6 +130,7 @@ const ShopController = {
 			res.render("ShopPage/Checkout", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
 				csrfToken: req.csrfToken(),
+				checkouts: service_payload.checkouts,
 			});
 		} catch (err) {
 			next(err);
