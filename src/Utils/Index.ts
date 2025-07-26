@@ -1,8 +1,9 @@
 import { access } from "fs/promises";
 import { constants } from "fs";
+import type { Request, Response, NextFunction } from "express";
 
 // check if files exist
-async function fileExist(path) {
+async function fileExist(path: string) {
 	try {
 		await access(path, constants.F_OK);
 		return true;
@@ -11,7 +12,7 @@ async function fileExist(path) {
 	}
 }
 
-async function isLoggedIn(req, res, next) {
+async function isLoggedIn(req: Request, res: Response, next: NextFunction) {
 	if (req.cookies.jwt || req.cookies.user_id) {
 		req.isLoggedIn = true;
 		return next();

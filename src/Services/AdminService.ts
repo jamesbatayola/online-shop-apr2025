@@ -5,16 +5,16 @@ import path from "path";
 // __diranem & __filename
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import kleur from "kleur";
 
 import Utils from "../Utils/Index.ts";
 import type { Request } from "express";
+import type HttpError from "../Interface/httpError.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // ------- PRIVATE ------- //
-const _postAddProduct = async (req) => {
+const _postAddProduct = async (req: Request) => {
 	const file = req.file;
 	const { name, price, description } = req.body;
 
@@ -26,17 +26,22 @@ const _postAddProduct = async (req) => {
 		image_url = file.filename;
 	}
 
-	// const product = await Product.create(name, price, image_url, description, req.user.id);
-	const product = await client.product.create({
-		data: { name: name, price: price, image_url: image_url, description: description, user_id: req.user.id },
-	});
+	const user_id = req.user?.id;
 
-	return product;
+	if (!user_id) {
+		const err = new Error("No user id");
+		throw err;
+	} else {
+		const product = await client.product.create({
+			data: { name: name, price: price, image_url: image_url, description: description, user_id: user_id },
+		});
+		return product;
+	}
 };
 
 const _getUserProducts = async (req: Request) => {
 	// const products = await Product.findByUserId(req.user.id);
-	const product = await client.product.findFirst({ where: { user_id: req.user.id } });
+	const products = await client.product.findFirst({ where: { user_id: req.user?.id } });
 	return products;
 };
 
@@ -77,9 +82,9 @@ const AdminService = {
 		}
 
 		if (mode === "view_product" && req.query.id) {
-			const product_id = req.query.id;
+			const product_id = req.query.id as string;
 
-			const product = await Product.findById(product_id);
+			const product = await client.product.findFirst({ where: { id: product_id } });
 
 			return {
 				success: true,
@@ -100,11 +105,19 @@ const AdminService = {
 
 		let message = "No image deleted";
 
+		const product = await client.product.findFirst({ where: { id: id } });
+
 		// Remove old photo from local disk
 		if (file) {
 			image_url = file.filename;
 
-			const old_image = await Product.getImageUrl(id);
+			const old_image = product?.image_url;
+
+			if (!old_image) {
+				const err = new Error("Image_url not found") as HttpError;
+				err.statusCode = 404;
+				throw err;
+			}
 
 			const file_path = path.join(__dirname, "..", "Public", "img", old_image);
 
@@ -116,9 +129,14 @@ const AdminService = {
 			message = "Old image deleted";
 		}
 
-		const product = await Product.update(id, name, price, description, image_url);
-
-		console.log(kleur.bgCyan("FINISH!"));
+		await client.product.update({
+			where: { id: product?.id },
+			data: {
+				id: product?.name,
+				description: product?.description,
+				image_url: product?.image_url,
+			},
+		});
 
 		return {
 			data: product,
@@ -129,16 +147,18 @@ const AdminService = {
 	async delete_product(req: Request) {
 		const { product_id } = req.params;
 
-		const image_url = await Product.getImageUrl(product_id);
-		const image_url_path = path.join(__dirname, "..", "Public", "img", image_url);
+		// const image_url = await Product.getImageUrl(product_id);
+		const product = await client.product.findFirst({ where: { id: product_id } });
 
-		if (Utils.fileExist(image_url_path)) {
+		const image_url_path = path.join(__dirname, "..", "Public", "img", product?.image_url as string);
+
+		if (await Utils.fileExist(image_url_path)) {
 			fs.unlinkSync(image_url_path);
 		}
 
-		const product = await Product.delete(product_id);
+		await client.product.delete({ where: { id: product?.id } });
 
-		return { product };
+		console.log("Product is deleted successfully");
 	},
 };
 

@@ -12,6 +12,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
 		"lib": ["dom", "dom.iterable", "ESNext"],
-		"types": ["vitest/globals"]
-	}
+		"typeRoots": ["./node_modules/@types", "./types"]
+	},
+	"include": ["src", "types"]
 }
