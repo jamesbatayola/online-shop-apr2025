@@ -1,27 +1,22 @@
 BEGIN;
-
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(84) NOT NULL,
     email VARCHAR(124) NOT NULL UNIQUE,
     password TEXT NOT NULL,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     description TEXT,
-    image_url TEXT, 
+    image_url TEXT,
     user_id UUID NOT NULL,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TYPE cart_status AS ENUM ('active', 'checked_out');
 CREATE TABLE IF NOT EXISTS carts (
     id SERIAL PRIMARY KEY,
@@ -29,10 +24,8 @@ CREATE TABLE IF NOT EXISTS carts (
     status cart_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
-
 -- JUNCTION TABLE
 CREATE TABLE IF NOT EXISTS cart_item (
     id SERIAL PRIMARY KEY,
@@ -41,12 +34,9 @@ CREATE TABLE IF NOT EXISTS cart_item (
     product_id INTEGER NOT NULL,
     UNIQUE (cart_id, product_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
 );
-
 CREATE TYPE order_status AS ENUM ('on_process', 'delivered');
 CREATE TABLE IF NOT EXISTS checkouts (
     id SERIAL PRIMARY KEY,
@@ -55,10 +45,8 @@ CREATE TABLE IF NOT EXISTS checkouts (
     checkout_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS checkout_items (
     id SERIAL PRIMARY KEY,
     checkout_id INTEGER NOT NULL,
@@ -67,23 +55,16 @@ CREATE TABLE IF NOT EXISTS checkout_items (
     user_id UUID NOT NULL,
     total_ammount DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-    FOREIGN KEY (checkout_id) REFERENCES checkouts (id) ON DELETE CASCADE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP FOREIGN KEY (checkout_id) REFERENCES checkouts (id) ON DELETE CASCADE,
     FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
     FOREIGN KEY (cart_item_id) REFERENCES cart_items (id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-)
-
-CREATE TABLE IF NOT EXISTS password_reset_tokens (
+) CREATE TABLE IF NOT EXISTS password_reset_tokens (
     id SERIAL PRIMARY KEY NOT NULL,
     user_id UUID NOT NULL,
     token_hash VARCHAR(255) UNIQUE NOT NULL,
     expires_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL '15 minutes'),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-)
-
-COMMIT;
+) COMMIT;

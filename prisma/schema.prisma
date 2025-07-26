@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // Primary Fields
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  // Relation
+  Products Product[]
+
+  // Time
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  Cart               Cart[]
+  PasswordResetToken PasswordResetToken[]
+}
+
+model Product {
+  // Primary Field
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(84)
+  price       Decimal @db.Decimal(10, 2)
+  description String  @db.VarChar(255)
+  image_url   String
+
+  // FK
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  // Time
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Checkout  Checkout[]
+}
+
+enum CartStatus {
+  active
+  checked_out
+}
+
+model Cart {
+  // Primary Field
+  id     String     @id @default(uuid())
+  status CartStatus @default(active)
+
+  // FK
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  // Time
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Checkout  Checkout[]
+}
+
+model CartItem {
+  // Primary Field
+  id String @id @default(uuid())
+
+  // Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Checkout {
+  // Primary Field
+  id String @id @default(uuid())
+
+  // FK
+  cart_id    String
+  cart       Cart    @relation(fields: [cart_id], references: [id])
+  product_id String
+  product    Product @relation(fields: [product_id], references: [id])
+
+  // Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CheckoutItem {
+  // Primary Field
+  id String @id @default(uuid())
+
+  // Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  // Primary Field
+  id         String   @id @default(uuid())
+  token_hash String   @unique
+  expires_at DateTime @default(dbgenerated("CURRENT_TIMESTAMP + interval '15 minutes'")) @db.Timestamp(6)
+
+  // FK
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  // Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

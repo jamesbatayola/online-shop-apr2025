@@ -42,3 +42,10 @@ DELETE FROM checkout_items;
 DELETE FROM checkouts;
 DELETE FROM carts;
 
+
+DROP TABLE cart_items CASCADE;
+DROP TABLE carts CASCADE;
+DROP TABLE checkout_items CASCADE;
+DROP TABLE password_reset_tokens CASCADE;
+DROP TABLE products CASCADE;
+DROP TABLE users CASCADE;

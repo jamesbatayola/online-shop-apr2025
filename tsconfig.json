@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"target": "es2024",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"allowImportingTsExtensions": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"sourceMap": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"lib": ["dom", "dom.iterable", "ESNext"],
+		"types": ["vitest/globals"]
+	}
+}
