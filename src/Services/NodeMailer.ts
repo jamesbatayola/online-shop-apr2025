@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 const transporter = nodemailer.createTransport({
 	host: process.env.MAILER_HOST,
@@ -8,12 +9,12 @@ const transporter = nodemailer.createTransport({
 		user: process.env.MAILER_USER,
 		pass: process.env.MAILER_PASSWORD,
 	},
-});
+} as SMTPTransport.Options);
 
-export default async function (mail_object) {
+export default async function (mail_object: object) {
 	try {
 		return await transporter.sendMail(mail_object);
-	} catch (err) {
+	} catch (err: any) {
 		err.message = err.message || "Error occured while sending mail";
 		throw err;
 	}

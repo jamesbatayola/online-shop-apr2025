@@ -1,94 +1,120 @@
-import Product from "../Models/Product.ts";
-import Cart from "../Models/Cart.ts";
-import CartItem from "../Models/CartItem.ts";
-import Checkout from "../Models/Checkout.ts";
-import CheckoutItem from "../Models/CheckoutItems.ts";
+// import Product from "../Models/Product.ts";
+// import Cart from "../Models/Cart.ts";
+// import CartItem from "../Models/CartItem.ts";
+// import Checkout from "../Models/Checkout.ts";
+// import CheckoutItem from "../Models/CheckoutItems.ts";
+
+import client from "../../prisma/client.ts";
+import type { Request } from "express";
+import type HttpError from "../Interface/httpError.ts";
 
 const ShopService = {
 	async fetch_products() {
-		const products = Product.findAll();
+		const products = await client.product.findMany();
 		return products;
 	},
 
 	// fetch carts products of user
-	async fetch_cart_products(req) {
-		const user_cart = await Cart.findOrCreate(req.user.id, "active");
+	async fetch_cart_products(req: Request) {
+		let user_cart = await client.cart.findFirst({ where: { user_id: req.user?.id, status: "active" } });
 
-		const cart_products = await Cart.findProducts(user_cart.id);
-		return cart_products;
+		if (user_cart) {
+			user_cart = await client.cart.create({ data: { user_id: req.user?.id as string } });
+		}
+
+		const cart_products = await client.product.findMany({ where: { user_id: user_cart?.user_id } });
+
+		return { cart_products, user_cart };
 	},
 
-	async add_to_cart(req) {
-		console.log("A");
-
+	async add_to_cart(req: Request) {
 		const { product_id } = req.params;
 
 		// find user cart
-		const cart = await Cart.findOrCreate(req.user.id);
+		let cart = await client.cart.findFirst({ where: { user_id: req.user?.id } });
 
-		const cart_item = await CartItem.findByCartAndProduct(cart.id, product_id);
+		if (!cart) {
+			cart = await client.cart.create({ data: { user_id: req.user?.id as string } });
+		}
+
+		const cart_item = await client.cartItem.findFirst({ where: { cart_id: cart.id, product_id: product_id } });
 
 		// check cart item existance
 		if (!cart_item) {
-			return await CartItem.addItems(cart.id, product_id); // insert new cart item
+			await client.cartItem.create({ data: { cart_id: cart?.id as string, product_id: product_id } });
 		} else {
-			return await Cart.addProductQuantity(cart_item.id); // increment quantity
+			await client.cartItem.update({ where: { id: cart_item?.id }, data: { quantity: (cart_item.quantity += 1) } });
 		}
 	},
 
-	async display_cart_products(cart_id, product_id) {
-		const cart_item = await Cart.findProduct(cart_id, product_id);
+	async display_cart_products(cart_id: string, product_id: string) {
+		const cart_item = await client.cartItem.findFirst({ where: { cart_id: cart_id, product_id: product_id } });
 
 		if (!cart_item) {
-			const err = new Error("Cart item does not exist");
+			const err = new Error("Cart item does not exist") as HttpError;
 			err.statusCode = 404;
 			throw err;
 		}
 
-		const product = await Product.findById(product_id);
+		const product = await client.product.findFirst({ where: { id: product_id } });
 
 		return {
 			cart_item_id: cart_item.id,
 
-			image: product.image_url,
-			name: product.name,
-			description: product.description,
-			quantity: cart_item.quantity,
-			price_each: product.price,
-			price_total: product.price * cart_item.quantity,
+			//! POSSIBLE UNDEFINED
+			image: product?.image_url,
+			name: product?.name,
+			description: product?.description,
+			quantity: cart_item?.quantity,
+			price_each: product?.price,
+			price_total: Number(product?.price) * cart_item.quantity,
 		};
 	},
 
 	// must returns new quantity
-	async plus_cart_product(req) {
+	async plus_cart_product(req: Request) {
 		const { cart_item_id } = req.params;
 
-		const cart_item = await Cart.addProductQuantity(cart_item_id);
-		const product = await Product.findById(cart_item.product_id);
+		const cart_item = await client.cartItem.findUnique({ where: { id: cart_item_id } });
+		const current_quantity: number = cart_item!.quantity;
+
+		const cart_item_updated = await client.cartItem.update({
+			where: { id: cart_item_id },
+			data: { quantity: current_quantity + 1 },
+		});
+
+		const product = await client.product.findFirst({ where: { id: cart_item?.product_id } });
 
 		return {
-			new_quantity: cart_item.quantity,
-			new_total_price: product.price * cart_item.quantity,
+			new_quantity: cart_item_updated.quantity,
+
+			//! POSSIBLE UNDEFINED
+			new_total_price: Number(product?.price) * cart_item_updated.quantity,
 		};
 	},
 
-	async minus_cart_product(req) {
+	async minus_cart_product(req: Request) {
 		const { cart_item_id } = req.params;
-		const { current_quantity } = req.body;
+		let { current_quantity } = req.body;
 
 		let new_quantity;
 		let new_total_price;
+
+		const cart_item = await client.cartItem.findUnique({ where: { id: cart_item_id } });
 
 		if (current_quantity === 1) {
 			await this.remove_cart_product(req);
 			new_quantity = 0;
 			new_total_price = 0;
 		} else {
-			const cart_item = await Cart.minusProductQuantity(cart_item_id);
-			const product = await Product.findById(cart_item.product_id);
+			const cart_item_updated = await client.cartItem.update({ where: { id: cart_item_id }, data: { quantity: (current_quantity -= 1) } });
 
-			new_quantity = cart_item.quantity;
-			new_total_price = product.price * cart_item.quantity;
+			const product = await client.product.findUnique({ where: { id: cart_item?.product_id } });
+
+			new_quantity = cart_item_updated.quantity;
+
+			//! POSSIBLE UNDEFINED
+			new_total_price = Number(product?.price) * cart_item_updated.quantity;
 		}
 
 		return {
@@ -97,73 +123,58 @@ const ShopService = {
 		};
 	},
 
-	async remove_cart_product(req) {
+	async remove_cart_product(req: Request) {
 		const { cart_item_id } = req.params;
 
-		const cart_item = await Cart.removeProduct(cart_item_id);
+		const cart_item = await client.cartItem.delete({ where: { id: cart_item_id } });
 
 		return { cart_item };
 	},
 
-	async cart_checkout(req) {
+	// Todo
+	async cart_checkout(req: Request) {
 		const { cart_id } = req.params;
 
-		const cart_items = await CartItem.findByCart(cart_id);
+		const cart_items = await client.cartItem.findMany({ where: { cart_id: cart_id } });
 
 		const checkout_items_display = [];
 
-		const checkout = await Checkout.create(cart_id);
+		const checkout = await client.checkout.create({ data: { cart_id: cart_id, user_id: req.user?.id as string } });
 
 		for (let cart_item of cart_items) {
-			const product = await Product.findById(cart_item.product_id);
-			const total_price = product.price * cart_item.quantity;
+			const product = await client.product.findUnique({ where: { id: cart_item.product_id } });
 
-			const checkout_item = await CheckoutItem.create(checkout.id, cart_id, product.id, cart_item.quantity, total_price);
+			const total_price: number = Number(product?.price) * cart_item.quantity;
+
+			const checkout_item = await client.checkoutItem.create({
+				data: { quantity: cart_item.quantity, price: total_price, checkout_id: checkout.id, cart_id: cart_id },
+			});
 
 			checkout_items_display.push(checkout_item);
 
 			// Cart Items is now removed
-			await CartItem.removeById(cart_item.id);
+			await client.cartItem.delete({ where: { id: cart_item.id } });
 		}
 
-		await Cart.cartInactive(cart_id); // old cart becomes inactive
+		await client.cart.update({ where: { id: cart_id }, data: { status: "checked_out" } }); // old cart becomes inactive
 
-		await Cart.create(req.user.id); // new cart added
+		await client.cart.create({ data: { user_id: req.user?.id as string } }); // new cart added
 
 		return { checkout_items_display };
 	},
 
-	async get_checkout_items(req) {
-		const carts = await Cart.findCheckouts(req.user.id); // list of checked out carts
+	async get_checkout_items(req: Request) {
+		const cart = await client.cart.findFirst({ where: { user_id: req.user?.id, status: "checked_out" } });
 
-		if (!carts) {
-			return console.log("CART DOES NOT EXIST");
-		}
-
-		const checkouts = [];
-
-		for (let cart of carts) {
-			const _checkout = await Checkout.findByCartAndOnProcess(cart.id);
-
-			const temp = {
-				checkout_id: _checkout.id,
-				items: await CheckoutItem.findByCheckoutId(_checkout.id),
-			};
-
-			checkouts.push(temp);
-		}
-
-		return { checkouts };
+		return await client.checkoutItem.findMany({ where: { cart_id: cart?.id } });
 	},
 
-	async removeCheckout(req) {
+	async removeCheckout(req: Request) {
 		const { checkout_id } = req.body;
 
-		const checkout = await Checkout.remove(checkout_id);
+		const checkout = await client.checkout.delete({ where: { id: checkout_id } });
 
-		console.log(checkout);
-
-		await Cart.remove(checkout.cart_id); // removes the cart linked to the checkout
+		await client.cart.delete({ where: { id: checkout.cart_id } }); // removes the cart linked to the checkout
 
 		return { checkout };
 	},

@@ -28,6 +28,7 @@ model User {
   updatedAt          DateTime             @updatedAt
   Cart               Cart[]
   PasswordResetToken PasswordResetToken[]
+  Checkout           Checkout[]
 }
 
 model Product {
@@ -42,10 +43,13 @@ model Product {
   user_id String
   user    User   @relation(fields: [user_id], references: [id])
 
+  // Children
+  Checkout Checkout[]
+  CartItem CartItem[]
+
   // Time
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Checkout  Checkout[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum CartStatus {
@@ -62,24 +66,20 @@ model Cart {
   user_id String
   user    User   @relation(fields: [user_id], references: [id])
 
+  // Children
+  Checkout Checkout[]
+  CartItem CartItem[]
+
   // Time
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Checkout  Checkout[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  CheckoutItem CheckoutItem[]
 }
 
 model CartItem {
   // Primary Field
-  id String @id @default(uuid())
-
-  // Time
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Checkout {
-  // Primary Field
-  id String @id @default(uuid())
+  id       String @id @default(uuid())
+  quantity Int    @default(1)
 
   // FK
   cart_id    String
@@ -92,9 +92,43 @@ model Checkout {
   updatedAt DateTime @updatedAt
 }
 
+enum CheckoutStatus {
+  on_process
+  delivered
+}
+
+model Checkout {
+  // Primary Field
+  id     String         @id @default(uuid())
+  status CheckoutStatus @default(on_process)
+
+  // FK
+  cart_id String
+  cart    Cart   @relation(fields: [cart_id], references: [id])
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  // Children
+  CheckoutItem CheckoutItem[]
+
+  // Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+}
+
 model CheckoutItem {
   // Primary Field
-  id String @id @default(uuid())
+  id       String  @id @default(uuid())
+  price    Decimal
+  quantity Int
+
+  // FK
+  checkout_id String
+  checkout    Checkout @relation(fields: [checkout_id], references: [id])
+  cart_id     String
+  cart        Cart     @relation(fields: [cart_id], references: [id])
 
   // Time
   createdAt DateTime @default(now())

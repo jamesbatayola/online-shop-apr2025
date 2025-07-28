@@ -3,7 +3,6 @@ import type { Request, Response, NextFunction } from "express";
 // import CheckoutItem from "../Models/CheckoutItems.js";
 import ShopService from "../Services/ShopService.ts";
 import csrf from "../Authentication/CsrfCsrf.ts";
-import Checkout from "../Models/Checkout.ts";
 
 const ShopController = {
 	async GET_HomePage(req: Request, res: Response, next: NextFunction) {
@@ -33,24 +32,22 @@ const ShopController = {
 
 	async GET_CartPage(req: Request, res: Response, next: NextFunction) {
 		try {
-			const cart_products = await ShopService.fetch_cart_products(req);
-
-			const cart_id = cart_products[0]?.cart_id || null;
+			const { cart_products, user_cart } = await ShopService.fetch_cart_products(req);
 
 			// process display
 			const products_to_display = [];
 
-			for (let cart_product of cart_products) {
-				const product_sanitize = await ShopService.display_cart_products(cart_product.cart_id, cart_product.product_id);
+			for (let product of cart_products) {
+				const product_sanitize = await ShopService.display_cart_products(user_cart?.id as string, product.id);
 
 				products_to_display.push(product_sanitize);
 			}
 
 			return res.render("ShopPage/Cart", {
 				products: products_to_display,
-				cart_id: cart_id,
+				cart_id: user_cart,
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
-				csrfToken: req.csrfToken(),
+				csrfToken: req.csrfToken?.(),
 			});
 		} catch (err) {
 			next(err);
@@ -131,8 +128,8 @@ const ShopController = {
 
 			res.render("ShopPage/Checkout", {
 				isLoggedIn: req.cookies.jwt && req.cookies.user_id,
-				csrfToken: req.csrfToken(),
-				checkouts: service_payload.checkouts,
+				csrfToken: req.csrfToken?.(),
+				checkouts: service_payload,
 			});
 		} catch (err) {
 			next(err);
